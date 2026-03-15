@@ -1,0 +1,180 @@
+@import "tailwindcss";
+
+/* ===== OmniFlix Ben 10 Theme ===== */
+@theme {
+  --color-omnitrix-green: #00FF41;
+  --color-omnitrix-dark: #0A1A0F;
+  --color-omnitrix-panel: #0D2818;
+  --color-omnitrix-glow: #39FF14;
+  --color-alien-cyan: #00E5FF;
+  --color-alien-orange: #FF6D00;
+  --color-surface-dark: #070B0A;
+  --color-surface-card: #0F1A14;
+  --color-surface-elevated: #132A1C;
+  --color-text-primary: #E8F5E9;
+  --color-text-secondary: #81C784;
+  --color-text-muted: #4A7C59;
+  --color-danger: #FF1744;
+  --color-warning: #FFD600;
+
+  --font-display: 'Orbitron', monospace;
+  --font-body: 'Rajdhani', sans-serif;
+  --font-ui: 'Inter', sans-serif;
+}
+
+/* ===== Global Styles ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-surface-dark);
+  color: var(--color-text-primary);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-surface-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-omnitrix-panel);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-omnitrix-green);
+}
+
+/* ===== Omnitrix Glow Utilities ===== */
+.glow-green {
+  box-shadow: 0 0 15px rgba(0, 255, 65, 0.3), 0 0 30px rgba(0, 255, 65, 0.1);
+}
+
+.glow-green-strong {
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.5), 0 0 40px rgba(0, 255, 65, 0.2), 0 0 60px rgba(0, 255, 65, 0.1);
+}
+
+.glow-cyan {
+  box-shadow: 0 0 15px rgba(0, 229, 255, 0.3), 0 0 30px rgba(0, 229, 255, 0.1);
+}
+
+.glow-orange {
+  box-shadow: 0 0 15px rgba(255, 109, 0, 0.3), 0 0 30px rgba(255, 109, 0, 0.1);
+}
+
+.text-glow-green {
+  text-shadow: 0 0 10px rgba(0, 255, 65, 0.5), 0 0 20px rgba(0, 255, 65, 0.3);
+}
+
+.text-glow-cyan {
+  text-shadow: 0 0 10px rgba(0, 229, 255, 0.5), 0 0 20px rgba(0, 229, 255, 0.3);
+}
+
+/* ===== Glassmorphism ===== */
+.glass {
+  background: rgba(13, 40, 24, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 255, 65, 0.1);
+}
+
+.glass-dark {
+  background: rgba(7, 11, 10, 0.8);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid rgba(0, 255, 65, 0.08);
+}
+
+/* ===== Energy Pulse Animation ===== */
+@keyframes energy-pulse {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes omnitrix-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes omnitrix-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(0, 255, 65, 0.3), 0 0 40px rgba(0, 255, 65, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(0, 255, 65, 0.6), 0 0 80px rgba(0, 255, 65, 0.3), 0 0 120px rgba(0, 255, 65, 0.1);
+  }
+}
+
+@keyframes scan-line {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+@keyframes holographic-shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+.animate-energy-pulse {
+  animation: energy-pulse 2s ease-in-out infinite;
+}
+
+.animate-omnitrix-spin {
+  animation: omnitrix-spin 3s linear infinite;
+}
+
+.animate-omnitrix-glow {
+  animation: omnitrix-glow 2s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* ===== Hide scrollbar for horizontal rows ===== */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* ===== Skeleton Loading ===== */
+@keyframes skeleton-shimmer {
+  0% { background-position: -200px 0; }
+  100% { background-position: calc(200px + 100%) 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--color-surface-card) 25%, var(--color-surface-elevated) 37%, var(--color-surface-card) 63%);
+  background-size: 400px 100%;
+  animation: skeleton-shimmer 1.4s ease infinite;
+}

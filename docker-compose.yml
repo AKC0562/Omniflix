@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:7
+    container_name: omniflix-mongodb
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: omniflix
+
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: omniflix-server
+    ports:
+      - '5000:5000'
+    depends_on:
+      - mongodb
+    environment:
+      PORT: 5000
+      NODE_ENV: production
+      MONGODB_URI: mongodb://mongodb:27017/omniflix
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      TMDB_API_KEY: ${TMDB_API_KEY}
+      CLIENT_URL: http://localhost:5173
+    restart: unless-stopped
+
+volumes:
+  mongo_data:
