@@ -91,34 +91,19 @@ export default function Navbar() {
 
         {/* Right side */}
         <div className="flex items-center gap-3">
-          {/* Search */}
-          <AnimatePresence>
-            {isSearchOpen ? (
-              <motion.form
-                initial={{ width: 0, opacity: 0 }}
-                animate={{ width: 260, opacity: 1 }}
-                exit={{ width: 0, opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                onSubmit={handleSearchSubmit}
-                className="relative overflow-hidden"
-              >
-                <input
-                  ref={searchInputRef}
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Titles, people, genres..."
-                  className="w-full bg-surface-card/80 border border-omnitrix-green/30 text-text-primary text-sm rounded-lg px-4 py-2 pr-9 placeholder:text-text-muted focus:outline-none focus:border-omnitrix-green focus:ring-1 focus:ring-omnitrix-green/30 font-body"
-                />
-                <button type="button" onClick={toggleSearch} className="absolute right-2 top-1/2 -translate-y-1/2 text-text-muted hover:text-omnitrix-green">
-                  <FiX size={16} />
-                </button>
-              </motion.form>
-            ) : (
-              <button onClick={toggleSearch} className="p-2 text-text-secondary hover:text-omnitrix-green transition-colors" aria-label="Search">
-                <FiSearch size={20} />
-              </button>
-            )}
-          </AnimatePresence>
+          {/* Search Link */}
+          <Link
+            to="/search"
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border border-transparent transition-all duration-300 ${
+              location.pathname === '/search'
+                ? 'text-omnitrix-green border-omnitrix-green/30 bg-omnitrix-green/10'
+                : 'hover:border-omnitrix-green/30 hover:bg-omnitrix-green/5 text-text-secondary hover:text-omnitrix-green'
+            }`}
+            aria-label="Search"
+          >
+            <FiSearch size={18} />
+            <span className="hidden sm:inline text-sm font-body font-medium">Search</span>
+          </Link>
 
           {/* Notifications */}
           <button className="p-2 text-text-secondary hover:text-omnitrix-green transition-colors relative hidden md:block" aria-label="Notifications">
@@ -126,90 +111,99 @@ export default function Navbar() {
             <span className="absolute top-1 right-1 w-2 h-2 bg-alien-orange rounded-full" />
           </button>
 
-          {/* Profile menu */}
+          {/* Profile Section */}
           {user && activeProfile && avatarInfo && (
-            <div className="relative" ref={profileMenuRef}>
-              <button
-                onClick={() => setProfileMenuOpen(!profileMenuOpen)}
-                className="flex items-center gap-2 group"
+            <div className="flex items-center gap-4">
+              <Link
+                to="/profiles"
+                className="hidden md:block text-sm font-display font-medium text-text-secondary hover:text-omnitrix-green transition-colors"
               >
-                <div
-                  className="w-8 h-8 rounded-md flex items-center justify-center text-sm font-bold font-display border transition-all group-hover:scale-105"
-                  style={{
-                    backgroundColor: avatarInfo.color + '30',
-                    borderColor: avatarInfo.color + '60',
-                    color: avatarInfo.color,
-                    boxShadow: `0 0 12px ${avatarInfo.glowColor}`,
-                  }}
+                Manage Profiles
+              </Link>
+              
+              <div className="relative" ref={profileMenuRef}>
+                <button
+                  onClick={() => setProfileMenuOpen(!profileMenuOpen)}
+                  className="flex items-center gap-2 group"
                 >
-                  {avatarInfo.emoji}
-                </div>
-                <FiChevronDown
-                  size={14}
-                  className={`text-text-muted transition-transform ${profileMenuOpen ? 'rotate-180' : ''}`}
-                />
-              </button>
-
-              <AnimatePresence>
-                {profileMenuOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                    className="absolute right-0 top-12 w-56 glass rounded-xl overflow-hidden shadow-2xl"
+                  <div
+                    className="w-8 h-8 rounded-md flex items-center justify-center text-sm font-bold font-display border transition-all group-hover:scale-105"
+                    style={{
+                      backgroundColor: avatarInfo.color + '30',
+                      borderColor: avatarInfo.color + '60',
+                      color: avatarInfo.color,
+                      boxShadow: `0 0 12px ${avatarInfo.glowColor}`,
+                    }}
                   >
-                    <div className="p-3 border-b border-omnitrix-green/10">
-                      <p className="text-sm font-medium text-text-primary">{activeProfile.name}</p>
-                      <p className="text-xs text-text-muted">{avatarInfo.name}</p>
-                    </div>
+                    {avatarInfo.emoji}
+                  </div>
+                  <FiChevronDown
+                    size={14}
+                    className={`text-text-muted transition-transform ${profileMenuOpen ? 'rotate-180' : ''}`}
+                  />
+                </button>
 
-                    {user.profiles.filter(p => p._id !== activeProfile._id).map(profile => {
-                      const info = getAlienAvatarInfo(profile.avatar);
-                      return (
-                        <button
-                          key={profile._id}
-                          onClick={() => {
-                            useAuthStore.getState().setActiveProfile(profile);
-                            setProfileMenuOpen(false);
-                          }}
-                          className="w-full flex items-center gap-3 px-3 py-2.5 text-left hover:bg-omnitrix-green/5 transition-colors"
-                        >
-                          <div
-                            className="w-7 h-7 rounded flex items-center justify-center text-xs"
-                            style={{ backgroundColor: info.color + '25', color: info.color }}
+                <AnimatePresence>
+                  {profileMenuOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                      className="absolute right-0 top-12 w-56 glass rounded-xl overflow-hidden shadow-2xl"
+                    >
+                      <div className="p-3 border-b border-omnitrix-green/10">
+                        <p className="text-sm font-medium text-text-primary">{activeProfile.name}</p>
+                        <p className="text-xs text-text-muted">{avatarInfo.name}</p>
+                      </div>
+
+                      {user.profiles.filter(p => p._id !== activeProfile._id).map(profile => {
+                        const info = getAlienAvatarInfo(profile.avatar);
+                        return (
+                          <button
+                            key={profile._id}
+                            onClick={() => {
+                              useAuthStore.getState().setActiveProfile(profile);
+                              setProfileMenuOpen(false);
+                            }}
+                            className="w-full flex items-center gap-3 px-3 py-2.5 text-left hover:bg-omnitrix-green/5 transition-colors"
                           >
-                            {info.emoji}
-                          </div>
-                          <span className="text-sm text-text-secondary">{profile.name}</span>
-                        </button>
-                      );
-                    })}
+                            <div
+                              className="w-7 h-7 rounded flex items-center justify-center text-xs"
+                              style={{ backgroundColor: info.color + '25', color: info.color }}
+                            >
+                              {info.emoji}
+                            </div>
+                            <span className="text-sm text-text-secondary">{profile.name}</span>
+                          </button>
+                        );
+                      })}
 
-                    <div className="border-t border-omnitrix-green/10">
-                      <Link
-                        to="/profiles"
-                        onClick={() => setProfileMenuOpen(false)}
-                        className="block px-3 py-2.5 text-sm text-text-secondary hover:bg-omnitrix-green/5 transition-colors"
-                      >
-                        Manage Profiles
-                      </Link>
-                      <Link
-                        to="/account"
-                        onClick={() => setProfileMenuOpen(false)}
-                        className="block px-3 py-2.5 text-sm text-text-secondary hover:bg-omnitrix-green/5 transition-colors"
-                      >
-                        Account
-                      </Link>
-                      <button
-                        onClick={() => { logout(); navigate('/'); setProfileMenuOpen(false); }}
-                        className="w-full text-left px-3 py-2.5 text-sm text-danger hover:bg-danger/5 transition-colors"
-                      >
-                        Sign Out
-                      </button>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                      <div className="border-t border-omnitrix-green/10">
+                        <Link
+                          to="/profiles"
+                          onClick={() => setProfileMenuOpen(false)}
+                          className="block px-3 py-2.5 text-sm text-text-secondary hover:bg-omnitrix-green/5 transition-colors"
+                        >
+                          Manage Profiles
+                        </Link>
+                        <Link
+                          to="/account"
+                          onClick={() => setProfileMenuOpen(false)}
+                          className="block px-3 py-2.5 text-sm text-text-secondary hover:bg-omnitrix-green/5 transition-colors"
+                        >
+                          Account
+                        </Link>
+                        <button
+                          onClick={() => { logout(); navigate('/'); setProfileMenuOpen(false); }}
+                          className="w-full text-left px-3 py-2.5 text-sm text-danger hover:bg-danger/5 transition-colors"
+                        >
+                          Sign Out
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
           )}
 

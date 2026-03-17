@@ -89,9 +89,8 @@ export default function AccountPage() {
                 <motion.div
                   key={profile._id}
                   whileHover={{ scale: 1.02 }}
-                  className={`glass rounded-xl p-4 flex items-center gap-3 border transition-colors ${
-                    isActive ? 'border-omnitrix-green/40' : 'border-transparent'
-                  }`}
+                  className={`glass rounded-xl p-4 flex items-center gap-3 border transition-colors ${isActive ? 'border-omnitrix-green/40' : 'border-transparent'
+                    }`}
                 >
                   <div
                     className="w-12 h-12 rounded-lg flex items-center justify-center text-2xl border shrink-0"
@@ -137,7 +136,7 @@ export default function AccountPage() {
           </motion.button>
         </div>
       </div>
-      
+
       <Footer />
     </motion.div>
   );

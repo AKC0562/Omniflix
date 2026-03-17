@@ -23,7 +23,7 @@ export default function ProfileSelectPage() {
     setTimeout(() => {
       setActiveProfile(profile);
       navigate('/browse');
-    }, 800);
+    }, 1100);
   };
 
   const handleDeleteProfile = async (profileId: string) => {
@@ -34,11 +34,10 @@ export default function ProfileSelectPage() {
   };
 
   return (
-    <div className="min-h-screen bg-surface-dark flex items-center justify-center relative overflow-hidden px-4">
-      {/* Background */}
-      <div className="absolute inset-0">
-        <div className="absolute top-1/3 left-1/3 w-[500px] h-[500px] bg-omnitrix-green/3 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/3 right-1/3 w-[400px] h-[400px] bg-alien-cyan/3 rounded-full blur-3xl" />
+    <div className="min-h-screen bg-[#141414] flex flex-col items-center justify-center relative overflow-hidden px-4 md:px-8">
+      {/* Background Glow */}
+      <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+        <div className="w-[600px] h-[600px] bg-omnitrix-green/5 rounded-full blur-[100px]" />
       </div>
 
       {/* Transformation flash overlay */}
@@ -47,139 +46,150 @@ export default function ProfileSelectPage() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: [0, 1, 1, 0] }}
-            transition={{ duration: 0.8, times: [0, 0.2, 0.6, 1] }}
-            className="fixed inset-0 z-50 bg-omnitrix-green/30 backdrop-blur-sm"
+            transition={{ duration: 1.2, times: [0, 0.2, 0.8, 1] }}
+            className="fixed inset-0 z-50 bg-omnitrix-green/50 backdrop-blur-md flex flex-col items-center justify-center"
           >
-            <div className="absolute inset-0 flex items-center justify-center">
-              <motion.div
-                initial={{ scale: 0, rotate: 0 }}
-                animate={{ scale: [0, 3, 0], rotate: [0, 180, 360] }}
-                transition={{ duration: 0.8 }}
-                className="w-20 h-20 bg-omnitrix-green rounded-xl"
-                style={{ borderRadius: '30%' }}
-              />
-            </div>
+            <motion.div
+              initial={{ scale: 0, rotate: -180 }}
+              animate={{ scale: [0, 1.5, 4, 15], rotate: [0, 180, 360, 540] }}
+              transition={{ duration: 1.2, ease: "easeInOut" }}
+              className="w-32 h-32 rounded-full border-[12px] border-black flex items-center justify-center relative bg-omnitrix-green overflow-hidden"
+            >
+               {/* Hourglass inside transformation */}
+               <div className="absolute inset-x-0 h-[120%] bg-black/90" style={{ clipPath: 'polygon(0 0, 100% 0, 60% 50%, 100% 100%, 0 100%, 40% 50%)' }} />
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
       <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="relative z-10 w-full max-w-3xl"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+        className="relative z-10 w-full max-w-6xl flex flex-col items-center justify-center -mt-12"
       >
-        <h1 className="text-center font-display font-bold text-2xl md:text-3xl text-text-primary mb-2 tracking-wider">
-          WHO'S WATCHING?
+        <h1 className="text-center font-display text-4xl md:text-5xl lg:text-6xl text-white mb-8 md:mb-12 font-medium tracking-wide">
+          Who's watching?
         </h1>
-        <p className="text-center text-text-muted text-sm font-body mb-10">
-          Choose your alien profile to begin streaming
-        </p>
 
-        {/* Profile grid */}
-        <div className="flex flex-wrap justify-center gap-6 md:gap-8 mb-10">
+        {/* Profile row */}
+        <div className="flex flex-wrap justify-center items-center gap-4 md:gap-6 lg:gap-10 mb-16 md:mb-20">
           {user.profiles.map((profile, i) => {
             const avatarInfo = getAlienAvatarInfo(profile.avatar);
+            const isTransforming = transformingId === profile._id;
+            
             return (
               <motion.div
                 key={profile._id}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: i * 0.1 }}
-                className="relative group"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1, duration: 0.4 }}
+                className="relative group flex flex-col items-center shrink-0"
               >
-                <button
-                  onClick={() => handleSelectProfile(profile)}
-                  className="flex flex-col items-center gap-3 w-28 md:w-32"
-                >
-                  {/* Avatar */}
-                  <motion.div
-                    whileHover={{ scale: 1.1, y: -5 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="relative w-24 h-24 md:w-28 md:h-28 rounded-xl flex items-center justify-center text-4xl md:text-5xl border-2 transition-all duration-300 cursor-pointer"
-                    style={{
-                      backgroundColor: avatarInfo.color + '15',
-                      borderColor: avatarInfo.color + '40',
-                      boxShadow: `0 0 0 rgba(0,0,0,0)`,
-                    }}
-                    onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLElement).style.boxShadow = `0 0 30px ${avatarInfo.glowColor}, 0 8px 30px rgba(0,0,0,0.3)`;
-                      (e.currentTarget as HTMLElement).style.borderColor = avatarInfo.color;
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLElement).style.boxShadow = `0 0 0 rgba(0,0,0,0)`;
-                      (e.currentTarget as HTMLElement).style.borderColor = avatarInfo.color + '40';
-                    }}
+                <div className="relative">
+                  <button
+                    onClick={() => handleSelectProfile(profile)}
+                    className="relative w-28 h-28 md:w-36 md:h-36 lg:w-40 lg:h-40 rounded-full flex items-center justify-center outline-none"
+                    disabled={transformingId !== null}
                   >
-                    <span>{avatarInfo.emoji}</span>
+                    {/* The Omnitrix Dial Base */}
+                    <motion.div 
+                      className="absolute inset-0 rounded-full border-4 border-[#333] bg-[#111] group-hover:border-white transition-colors duration-400 shadow-xl overflow-hidden"
+                      animate={isTransforming ? { scale: 1.1, borderColor: '#22c55e', boxShadow: '0 0 50px #22c55e' } : {}}
+                    >
+                      {/* Dial Details (Outer Ring) */}
+                      <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full opacity-60 group-hover:opacity-100 transition-opacity duration-300">
+                        <circle cx="50" cy="50" r="48" fill="none" stroke="#222" strokeWidth="4" />
+                        <circle cx="50" cy="50" r="44" fill="none" stroke={avatarInfo.color} strokeWidth="1.5" strokeDasharray="10 6" className="animate-[spin_20s_linear_infinite]" />
+                        {/* Dial interface notches */}
+                        <path d="M 50 0 L 50 12 M 100 50 L 88 50 M 50 100 L 50 88 M 0 50 L 12 50" stroke={avatarInfo.color} strokeWidth="3" opacity="0.9" />
+                        <path d="M 15 15 L 23 23 M 85 15 L 77 23 M 15 85 L 23 77 M 85 85 L 77 77" stroke="#444" strokeWidth="2" />
+                      </svg>
+                      
+                      {/* Omnitrix Hourglass Base (subtle dark background for contrast) */}
+                      <div className="absolute inset-3 bg-black/80 rounded-full flex items-center justify-center overflow-hidden border border-[#222]">
+                        <div className="absolute inset-0 opacity-40 group-hover:opacity-60 transition-opacity duration-300" style={{ backgroundColor: avatarInfo.color }} />
+                        {/* Avatar Image / Emoji */}
+                        <motion.span 
+                          className="relative z-10 text-5xl md:text-6xl lg:text-[4.5rem] drop-shadow-2xl"
+                          animate={isTransforming ? { scale: [1, 1.3, 0], opacity: [1, 1, 0] } : { scale: 1, opacity: 1 }}
+                        >
+                          {avatarInfo.emoji}
+                        </motion.span>
+                      </div>
+                      
+                      {/* Glow overlay on hover */}
+                      <div 
+                        className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" 
+                        style={{ boxShadow: `inset 0 0 25px ${avatarInfo.color}60` }}
+                      />
+                    </motion.div>
+                    
+                    {/* Editing Overlay */}
+                    {isEditing && (
+                      <div className="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center backdrop-blur-sm z-20">
+                        <FiEdit2 size={36} className="text-white" />
+                      </div>
+                    )}
+                  </button>
 
-                    {/* Animated ring on hover */}
-                    <div className="absolute inset-[-4px] rounded-xl border border-transparent group-hover:border-current opacity-0 group-hover:opacity-30 transition-all" style={{ color: avatarInfo.color }} />
-                  </motion.div>
-
-                  {/* Name */}
-                  <div className="text-center">
-                    <p className="text-sm font-body font-medium text-text-secondary group-hover:text-text-primary transition-colors">
-                      {profile.name}
-                    </p>
-                    <p className="text-xs text-text-muted mt-0.5">{avatarInfo.name}</p>
-                  </div>
-                </button>
-
-                {/* Edit/Delete buttons */}
-                {isEditing && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="absolute -top-2 -right-2 flex gap-1"
-                  >
-                    <button
+                  {/* Delete Button (when editing) */}
+                  {isEditing && (
+                    <motion.button
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
                       onClick={(e) => { e.stopPropagation(); handleDeleteProfile(profile._id); }}
-                      className="w-7 h-7 rounded-full bg-danger/20 border border-danger/40 text-danger flex items-center justify-center hover:bg-danger/30 transition-colors"
+                      className="absolute -top-1 -right-1 md:-top-2 md:-right-2 w-10 h-10 rounded-full bg-red-600 border-[3px] border-[#141414] text-white flex items-center justify-center hover:bg-red-500 transition-colors z-30 shadow-lg"
                       disabled={user.profiles.length <= 1}
                     >
-                      <FiTrash2 size={12} />
-                    </button>
-                  </motion.div>
-                )}
+                      <FiTrash2 size={18} />
+                    </motion.button>
+                  )}
+                </div>
+
+                {/* Profile Name */}
+                <span className="mt-4 md:mt-5 text-[#808080] group-hover:text-white transition-colors duration-300 text-lg md:text-xl lg:text-2xl font-display text-center">
+                  {profile.name}
+                </span>
               </motion.div>
             );
           })}
 
-          {/* Add profile button */}
+          {/* Add Profile Button */}
           {user.profiles.length < 5 && (
-            <motion.button
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: user.profiles.length * 0.1 }}
-              onClick={() => setShowCreateModal(true)}
-              className="flex flex-col items-center gap-3 w-28 md:w-32"
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: user.profiles.length * 0.1, duration: 0.4 }}
+              className="relative group flex flex-col items-center shrink-0"
             >
-              <motion.div
-                whileHover={{ scale: 1.1, y: -5 }}
-                whileTap={{ scale: 0.95 }}
-                className="w-24 h-24 md:w-28 md:h-28 rounded-xl border-2 border-dashed border-text-muted/30 flex items-center justify-center hover:border-omnitrix-green/50 hover:bg-omnitrix-green/5 transition-all cursor-pointer"
+              <button
+                onClick={() => setShowCreateModal(true)}
+                className="relative w-28 h-28 md:w-36 md:h-36 lg:w-40 lg:h-40 rounded-full flex items-center justify-center outline-none transition-colors duration-300 group-hover:bg-white"
               >
-                <FiPlus size={32} className="text-text-muted" />
-              </motion.div>
-              <p className="text-sm font-body text-text-muted">Add Profile</p>
-            </motion.button>
+                <div className="absolute inset-0 rounded-full border-4 border-[#333] group-hover:border-white transition-colors duration-300 flex items-center justify-center bg-transparent">
+                  <FiPlus size={56} className="text-[#808080] group-hover:text-black transition-colors duration-300" />
+                </div>
+              </button>
+              <span className="mt-4 md:mt-5 text-[#808080] group-hover:text-white transition-colors duration-300 text-lg md:text-xl lg:text-2xl font-display text-center">
+                Add Profile
+              </span>
+            </motion.div>
           )}
         </div>
 
-        {/* Manage button */}
-        <div className="flex justify-center">
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+        {/* Manage Profiles Button */}
+        <div className="w-full flex justify-center mt-4">
+          <button
             onClick={() => setIsEditing(!isEditing)}
-            className={`px-8 py-2.5 rounded-lg font-display text-sm tracking-wider border transition-colors ${
-              isEditing
-                ? 'bg-omnitrix-green text-surface-dark border-omnitrix-green'
-                : 'border-text-muted/40 text-text-secondary hover:border-omnitrix-green/50'
+            className={`px-6 py-2 md:px-8 md:py-3 font-display text-[1rem] md:text-xl tracking-[0.15em] border-[1px] md:border-[1.5px] transition-all duration-300 uppercase ${
+              isEditing 
+                ? 'bg-white text-black border-white' 
+                : 'border-[#808080] text-[#808080] hover:text-white hover:border-white'
             }`}
           >
-            {isEditing ? 'DONE' : 'MANAGE PROFILES'}
-          </motion.button>
+            {isEditing ? 'Done' : 'Manage Profiles'}
+          </button>
         </div>
       </motion.div>
 
@@ -236,60 +246,65 @@ function CreateProfileModal({
       className="fixed inset-0 z-[60] flex items-center justify-center px-4"
       onClick={onClose}
     >
-      <div className="fixed inset-0 bg-black/70 backdrop-blur-sm" />
+      <div className="fixed inset-0 bg-black/80 backdrop-blur-md" />
       <motion.div
-        initial={{ opacity: 0, y: 40, scale: 0.9 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: 30, scale: 0.9 }}
-        className="relative glass rounded-2xl p-6 md:p-8 w-full max-w-lg max-h-[90vh] overflow-y-auto"
+        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.9, y: 20 }}
+        className="relative bg-[#181818] border border-white/10 rounded-xl p-6 md:p-8 w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="font-display font-bold text-xl text-text-primary mb-6 tracking-wide">
-          CREATE PROFILE
+        <h2 className="font-display font-medium text-3xl md:text-4xl text-white mb-8 tracking-wide">
+          Add Profile
         </h2>
 
-        {/* Selected avatar preview */}
-        <div className="flex justify-center mb-6">
-          <motion.div
-            key={selectedAvatar}
-            initial={{ scale: 0, rotate: -180 }}
-            animate={{ scale: 1, rotate: 0 }}
-            transition={{ type: 'spring', damping: 15 }}
-            className="w-24 h-24 rounded-xl flex items-center justify-center text-5xl border-2"
-            style={{
-              backgroundColor: avatarInfo.color + '20',
-              borderColor: avatarInfo.color,
-              boxShadow: `0 0 30px ${avatarInfo.glowColor}`,
-            }}
-          >
-            {avatarInfo.emoji}
-          </motion.div>
-        </div>
-        <p className="text-center text-sm text-text-secondary mb-1 font-display">{avatarInfo.name}</p>
-        <p className="text-center text-xs text-text-muted mb-6 font-body">{avatarInfo.description}</p>
-
         {error && (
-          <div className="mb-4 p-3 rounded-lg bg-danger/10 border border-danger/30 text-danger text-sm text-center">
+          <div className="mb-6 p-4 rounded bg-red-500/10 border border-red-500/30 text-red-500 text-sm">
             {error}
           </div>
         )}
 
         <form onSubmit={handleCreate}>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Profile name"
-            required
-            maxLength={30}
-            className="w-full bg-surface-card border border-omnitrix-green/15 text-text-primary rounded-lg px-4 py-3 text-sm font-body placeholder:text-text-muted focus:outline-none focus:border-omnitrix-green/50 focus:ring-1 focus:ring-omnitrix-green/20 transition-all mb-6"
-          />
+          <div className="flex flex-col md:flex-row gap-6 md:gap-8 mb-8 border-b border-white/10 pb-8">
+            <div className="flex flex-col items-center shrink-0">
+              {/* Selected Avatar Preview styled like a dial */}
+              <motion.div
+                key={selectedAvatar}
+                initial={{ scale: 0.8, rotate: -90 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ type: 'spring', damping: 20 }}
+                className="w-32 h-32 md:w-40 md:h-40 rounded-full border-[3px] flex flex-col items-center justify-center relative overflow-hidden"
+                style={{
+                  backgroundColor: '#111',
+                  borderColor: avatarInfo.color,
+                  boxShadow: `0 0 40px ${avatarInfo.color}40`,
+                }}
+              >
+                <div className="absolute inset-0 opacity-30" style={{ backgroundColor: avatarInfo.color }} />
+                <span className="relative z-10 text-6xl md:text-7xl drop-shadow-lg">{avatarInfo.emoji}</span>
+              </motion.div>
+              <p className="text-center mt-4 text-sm font-display text-white tracking-widest uppercase">{avatarInfo.name}</p>
+            </div>
+
+            <div className="flex-1 flex flex-col justify-center gap-6">
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Name"
+                required
+                maxLength={30}
+                className="w-full bg-[#333] text-white px-4 py-3 text-lg placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-omnitrix-green transition-all"
+              />
+              <p className="text-sm text-gray-400 font-body leading-relaxed hidden md:block">
+                {avatarInfo.description}
+              </p>
+            </div>
+          </div>
 
           {/* Avatar grid */}
-          <h3 className="text-sm font-display font-semibold text-text-primary mb-3 tracking-wide">
-            CHOOSE YOUR ALIEN
-          </h3>
-          <div className="grid grid-cols-5 md:grid-cols-6 gap-2 mb-6 max-h-[240px] overflow-y-auto pr-1">
+          <h3 className="text-xl font-display text-white mb-4">Choose your alien</h3>
+          <div className="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-8 gap-3 mb-8 max-h-[160px] overflow-y-auto pr-2 custom-scrollbar">
             {ALIEN_AVATARS.map((alien) => (
               <motion.button
                 key={alien.id}
@@ -297,14 +312,13 @@ function CreateProfileModal({
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={() => setSelectedAvatar(alien.id)}
-                className={`aspect-square rounded-lg flex items-center justify-center text-2xl border-2 transition-all ${
+                className={`aspect-square rounded-full flex items-center justify-center text-3xl border-2 transition-all ${
                   selectedAvatar === alien.id
-                    ? 'border-current scale-110'
-                    : 'border-transparent bg-surface-card/50 hover:bg-surface-card'
+                    ? 'scale-110 shadow-lg'
+                    : 'border-transparent bg-[#333] hover:bg-[#444]'
                 }`}
                 style={{
                   color: alien.color,
-                  backgroundColor: selectedAvatar === alien.id ? alien.color + '20' : undefined,
                   borderColor: selectedAvatar === alien.id ? alien.color : 'transparent',
                 }}
                 title={alien.name}
@@ -314,23 +328,21 @@ function CreateProfileModal({
             ))}
           </div>
 
-          <div className="flex gap-3">
+          <div className="flex items-center gap-4 pt-4 border-t border-white/10">
+            <button
+              type="submit"
+              disabled={loading || !name.trim()}
+              className="px-8 py-3 bg-white text-black font-display text-lg tracking-widest uppercase hover:bg-gray-200 transition-colors disabled:opacity-50"
+            >
+              {loading ? '...' : 'Continue'}
+            </button>
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-2.5 rounded-lg border border-text-muted/30 text-text-secondary text-sm font-display hover:bg-surface-card transition-colors"
+              className="px-8 py-3 border border-gray-500 text-gray-400 font-display text-lg tracking-widest uppercase hover:text-white hover:border-white transition-colors"
             >
-              CANCEL
+              Cancel
             </button>
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              type="submit"
-              disabled={loading || !name.trim()}
-              className="flex-1 py-2.5 bg-omnitrix-green text-surface-dark font-display font-bold rounded-lg text-sm shadow-lg shadow-omnitrix-green/25 disabled:opacity-50"
-            >
-              {loading ? 'CREATING...' : 'CREATE'}
-            </motion.button>
           </div>
         </form>
       </motion.div>

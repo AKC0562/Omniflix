@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { FiSearch } from 'react-icons/fi';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FiSearch, FiX } from 'react-icons/fi';
 import MovieCard from '../components/movie/MovieCard';
 import MovieModal from '../components/movie/MovieModal';
 import OmnitrixSpinner from '../components/ui/OmnitrixSpinner';
@@ -15,30 +15,62 @@ export default function SearchPage() {
   const [results, setResults] = useState<TMDBMovie[]>([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
+  const [suggestions, setSuggestions] = useState<TMDBMovie[]>([]);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const performSearch = (q: string) => {
-    if (!q.trim()) return;
+  useEffect(() => {
+    // Focus input on mount
+    inputRef.current?.focus();
+    
+    // Fetch trending for suggestions
+    tmdbAPI.getTrending('movie', 'week')
+      .then(({ data }) => setSuggestions((data as any).results?.slice(0, 14) || []))
+      .catch(() => {});
+  }, []);
+
+  const performSearch = async (q: string) => {
+    if (!q.trim()) {
+      setResults([]);
+      setSearched(false);
+      return;
+    }
     setLoading(true);
     setSearched(true);
     setSearchParams({ q: q.trim() });
-    tmdbAPI.search(q.trim())
-      .then(({ data }) => setResults((data as any).results || []))
-      .catch(() => setResults([]))
-      .finally(() => setLoading(false));
-  };
-
-  useEffect(() => {
-    const q = searchParams.get('q');
-    if (q) {
-      setQuery(q);
-      performSearch(q);
+    try {
+      const { data } = await tmdbAPI.search(q.trim());
+      setResults((data as any).results || []);
+    } catch (e) {
+      setResults([]);
+    } finally {
+      setLoading(false);
     }
-  }, []);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    performSearch(query);
   };
+
+  // Debounced live search
+  useEffect(() => {
+    const q = query.trim();
+    if (q) {
+      const timer = setTimeout(() => {
+        performSearch(q);
+      }, 500);
+      return () => clearTimeout(timer);
+    } else {
+      setResults([]);
+      setSearched(false);
+      setSearchParams(new URLSearchParams());
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query]);
+
+  const clearSearch = () => {
+    setQuery('');
+    setSearchParams(new URLSearchParams());
+    inputRef.current?.focus();
+  };
+
+  const visibleResults = results.filter(m => m.poster_path);
+  const visibleSuggestions = suggestions.filter(m => m.poster_path);
 
   return (
     <motion.div
@@ -46,61 +78,83 @@ export default function SearchPage() {
       animate={{ opacity: 1 }}
       className="min-h-screen bg-surface-dark pt-24 pb-16 px-4 md:px-12 lg:px-16"
     >
-      <div className="max-w-6xl mx-auto">
-        {/* Search bar */}
-        <form onSubmit={handleSubmit} className="mb-10">
-          <div className="relative max-w-2xl mx-auto">
-            <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-text-muted" size={20} />
+      <div className="max-w-7xl mx-auto min-h-[60vh]">
+        {/* Search bar Netflix style */}
+        <div className="mb-12 relative z-10 transition-all duration-300">
+          <div className="relative group">
+            <FiSearch className="absolute left-6 top-1/2 -translate-y-1/2 text-text-muted group-focus-within:text-omnitrix-green transition-colors" size={26} />
             <input
+              ref={inputRef}
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search movies, TV shows, people..."
-              className="w-full bg-surface-card border border-omnitrix-green/20 text-text-primary text-lg rounded-xl pl-12 pr-6 py-4 font-body placeholder:text-text-muted focus:outline-none focus:border-omnitrix-green/50 focus:ring-2 focus:ring-omnitrix-green/20 transition-all"
-              autoFocus
+              className="w-full bg-surface-card/60 backdrop-blur-sm border border-omnitrix-green/20 text-text-primary text-xl md:text-3xl rounded-xl pl-16 pr-12 py-5 md:py-6 font-display placeholder:text-text-secondary focus:outline-none focus:border-omnitrix-green/50 focus:shadow-[0_0_20px_rgba(34,197,94,0.15)] focus:bg-surface-dark/90 transition-all duration-500"
             />
+            {query && (
+              <button 
+                onClick={clearSearch}
+                className="absolute right-6 top-1/2 -translate-y-1/2 text-text-muted hover:text-white transition-colors"
+                aria-label="Clear Search"
+              >
+                <FiX size={26} />
+              </button>
+            )}
           </div>
-        </form>
+        </div>
 
-        {/* Results */}
-        {loading ? (
-          <div className="flex justify-center py-20">
-            <OmnitrixSpinner size={60} />
-          </div>
-        ) : results.length > 0 ? (
-          <>
-            <h2 className="font-display text-lg text-text-primary mb-6 tracking-wide">
-              RESULTS FOR <span className="text-omnitrix-green">"{searchParams.get('q')}"</span>
-            </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-5">
-              {results.filter(m => m.poster_path).map((movie, i) => (
-                <MovieCard key={movie.id} movie={movie} index={i} />
-              ))}
+        {/* Results / Suggestions */}
+        <div className="mb-20">
+          {loading ? (
+            <div className="flex justify-center py-20">
+              <OmnitrixSpinner size={60} />
             </div>
-          </>
-        ) : searched ? (
-          <div className="text-center py-20">
-            <p className="text-4xl mb-4">🔍</p>
-            <h2 className="font-display text-xl text-text-primary mb-2">No results found</h2>
-            <p className="text-text-muted font-body">Try different keywords or check your spelling</p>
-          </div>
-        ) : (
-          <div className="text-center py-20">
+          ) : query.trim() && visibleResults.length > 0 ? (
+            <AnimatePresence>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7 gap-4 md:gap-5"
+              >
+                {visibleResults.map((movie, i) => (
+                  <MovieCard key={movie.id} movie={movie} index={i} />
+                ))}
+              </motion.div>
+            </AnimatePresence>
+          ) : query.trim() && searched ? (
+            <div className="text-center py-20">
+              <p className="text-5xl mb-6">🔍</p>
+              <h2 className="font-display text-2xl text-text-primary mb-3">No results found for "{query}"</h2>
+              <p className="text-text-secondary font-body text-lg">Try different keywords, titles, or genres.</p>
+            </div>
+          ) : !query.trim() ? (
+            /* Suggestions when empty */
             <motion.div
-              animate={{ scale: [1, 1.1, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-              className="text-5xl mb-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.1 }}
             >
-              🔭
+              <h2 className="font-display text-2xl text-text-primary mb-6 flex items-center gap-3">
+                <span className="w-1.5 h-6 bg-omnitrix-green rounded-full shadow-[0_0_10px_rgba(34,197,94,0.5)]"></span>
+                Top Searches
+              </h2>
+              {visibleSuggestions.length > 0 ? (
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-7 gap-4 md:gap-5">
+                  {visibleSuggestions.map((movie, i) => (
+                    <MovieCard key={movie.id} movie={movie} index={i} />
+                  ))}
+                </div>
+              ) : (
+                <div className="flex justify-center py-10">
+                  <OmnitrixSpinner size={40} />
+                </div>
+              )}
             </motion.div>
-            <h2 className="font-display text-xl text-text-primary mb-2">Explore the Omniverse</h2>
-            <p className="text-text-muted font-body">Search for movies, TV shows, and more</p>
-          </div>
-        )}
+          ) : null}
+        </div>
       </div>
 
       <MovieModal />
-      
       <Footer />
     </motion.div>
   );
