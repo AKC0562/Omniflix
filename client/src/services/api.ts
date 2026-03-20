@@ -127,6 +127,27 @@ export const imdbAPI = {
     api.get(`/imdb/search`, { params: { title, year } }),
 };
 
+// ===== Admin API =====
+export const adminAPI = {
+  /** Get dashboard statistics */
+  getStats: () =>
+    api.get<{ stats: import('../types').AdminStats }>('/admin/stats'),
+
+  /** Get paginated user list */
+  getUsers: (page = 1, limit = 20, search = '') =>
+    api.get<import('../types').AdminUsersResponse>('/admin/users', {
+      params: { page, limit, search },
+    }),
+
+  /** Delete a user by ID */
+  deleteUser: (userId: string) =>
+    api.delete<{ message: string; deletedUserId: string }>(`/admin/users/${userId}`),
+
+  /** Update a user's role */
+  updateUserRole: (userId: string, role: 'user' | 'admin') =>
+    api.patch<{ message: string; user: import('../types').User }>(`/admin/users/${userId}/role`, { role }),
+};
+
 export const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p';
 export const getImageUrl = (path: string | null, size = 'w500') =>
   path ? `${TMDB_IMAGE_BASE}/${size}${path}` : '';

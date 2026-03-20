@@ -158,3 +158,36 @@ export interface IMDbData {
   dvd: string | null;
   production: string | null;
 }
+
+// ===== Admin Types =====
+export interface AdminStats {
+  totalUsers: number;
+  totalAdmins: number;
+  totalProfiles: number;
+  recentUsers: number;
+  activeUsers: number;
+  usersByMonth: { month: string; count: number }[];
+}
+
+export interface AdminUser {
+  _id: string;
+  email: string;
+  username: string;
+  role: 'user' | 'admin';
+  profileCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Pagination {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
+export interface AdminUsersResponse {
+  users: AdminUser[];
+  pagination: Pagination;
+}
+

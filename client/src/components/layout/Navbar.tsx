@@ -193,6 +193,15 @@ export default function Navbar() {
                         >
                           Account
                         </Link>
+                        {user.role === 'admin' && (
+                          <Link
+                            to="/admin"
+                            onClick={() => setProfileMenuOpen(false)}
+                            className="block px-3 py-2.5 text-sm font-medium text-omnitrix-green hover:bg-omnitrix-green/5 transition-colors"
+                          >
+                            Admin Dashboard
+                          </Link>
+                        )}
                         <button
                           onClick={() => { logout(); navigate('/'); setProfileMenuOpen(false); }}
                           className="w-full text-left px-3 py-2.5 text-sm text-danger hover:bg-danger/5 transition-colors"
@@ -206,6 +215,7 @@ export default function Navbar() {
               </div>
             </div>
           )}
+
 
           {/* Mobile menu */}
           <button

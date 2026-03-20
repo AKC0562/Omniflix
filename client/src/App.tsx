@@ -9,6 +9,7 @@ import BrowsePage from './pages/BrowsePage';
 import SearchPage from './pages/SearchPage';
 import MyListPage from './pages/MyListPage';
 import AccountPage from './pages/AccountPage';
+import AdminDashboard from './pages/AdminDashboard';
 
 // Layout
 import { ProtectedRoute, PublicRoute } from './components/layout/ProtectedRoute';
@@ -42,6 +43,16 @@ export default function App() {
           <Route path="/my-list" element={<MyListPage />} />
           <Route path="/account" element={<AccountPage />} />
         </Route>
+
+        {/* Admin Dashboard (no regular navbar — has its own layout) */}
+        <Route
+          path="/admin"
+          element={
+            <RequireAuth>
+              <AdminDashboard />
+            </RequireAuth>
+          }
+        />
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />

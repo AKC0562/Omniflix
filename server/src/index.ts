@@ -14,6 +14,7 @@ import authRoutes from './routes/auth';
 import profileRoutes from './routes/profile';
 import tmdbRoutes from './routes/tmdb';
 import imdbRoutes from './routes/imdb';
+import adminRoutes from './routes/admin';
 
 const app = express();
 
@@ -43,6 +44,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/profiles', profileRoutes);
 app.use('/api/tmdb', tmdbRoutes);
 app.use('/api/imdb', imdbRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Health check
 app.get('/api/health', (_req, res) => {
