@@ -106,6 +106,10 @@ export const tmdbAPI = {
     api.get('/tmdb/genres'),
   getMoviesByGenre: (genreId: number, page = 1) =>
     api.get(`/tmdb/genres/${genreId}/movies`, { params: { page } }),
+  discoverMovies: (params: Record<string, string | number>) =>
+    api.get('/tmdb/discover/movie', { params }),
+  discoverTV: (params: Record<string, string | number>) =>
+    api.get('/tmdb/discover/tv', { params }),
 };
 
 // ===== IMDb API =====

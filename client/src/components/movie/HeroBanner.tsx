@@ -7,9 +7,10 @@ import type { TMDBMovie } from '../../types';
 
 interface Props {
   movies: TMDBMovie[];
+  category?: string;
 }
 
-export default function HeroBanner({ movies }: Props) {
+export default function HeroBanner({ movies, category }: Props) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const openModal = useUIStore((s) => s.openModal);
   const featured = movies.slice(0, 5);
@@ -28,6 +29,8 @@ export default function HeroBanner({ movies }: Props) {
   const movie = featured[currentIndex];
   const title = movie.title || movie.name || '';
   const backdrop = getBackdropUrl(movie.backdrop_path);
+
+  const categoryLabel = category === 'tv' ? 'TRENDING TV SERIES' : category === 'movies' ? 'TRENDING MOVIES' : 'FEATURED CONTENT';
 
   return (
     <div className="relative w-full h-[85vh] md:h-[90vh] overflow-hidden">
@@ -83,7 +86,7 @@ export default function HeroBanner({ movies }: Props) {
             >
               <div className="w-2 h-2 bg-omnitrix-green rounded-full animate-energy-pulse" />
               <span className="text-omnitrix-green text-xs font-display tracking-wider">
-                {movie.vote_average ? `★ ${movie.vote_average.toFixed(1)}` : 'TRENDING NOW'}
+                {categoryLabel} • {movie.vote_average ? `★ ${movie.vote_average.toFixed(1)}` : 'NEW'}
               </span>
             </motion.div>
 
@@ -124,11 +127,10 @@ export default function HeroBanner({ movies }: Props) {
             <button
               key={i}
               onClick={() => setCurrentIndex(i)}
-              className={`h-1 rounded-full transition-all duration-500 ${
-                i === currentIndex
-                  ? 'w-8 bg-omnitrix-green glow-green'
-                  : 'w-4 bg-text-muted/30 hover:bg-text-muted/50'
-              }`}
+              className={`h-1 rounded-full transition-all duration-500 ${i === currentIndex
+                ? 'w-8 bg-omnitrix-green glow-green'
+                : 'w-4 bg-text-muted/30 hover:bg-text-muted/50'
+                }`}
               aria-label={`Slide ${i + 1}`}
             />
           ))}

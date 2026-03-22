@@ -26,6 +26,10 @@ router.get('/tv/:id', tmdbController.getTVDetails);
 // Search
 router.get('/search', tmdbController.searchMulti);
 
+// Discover
+router.get('/discover/movie', tmdbController.discoverMovies);
+router.get('/discover/tv', tmdbController.discoverTV);
+
 // Genres
 router.get('/genres', tmdbController.getGenres);
 router.get('/genres/:genreId/movies', tmdbController.getMoviesByGenre);

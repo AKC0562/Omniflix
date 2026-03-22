@@ -55,7 +55,7 @@ export const getUpcomingMovies = (page: string = '1') =>
   fetchTMDB('/movie/upcoming', { page });
 
 export const getMovieDetails = (id: string) =>
-  fetchTMDB(`/movie/${id}`, { append_to_response: 'videos,credits,similar' });
+  fetchTMDB(`/movie/${id}`, { append_to_response: 'videos,credits,similar', include_video_language: 'hi,en,ta,te,mr,bn,ml,kn,gu,pa,ja,ko,zh,fr,es,ru,de' });
 
 export const getMovieVideos = (id: string) =>
   fetchTMDB(`/movie/${id}/videos`);
@@ -68,7 +68,7 @@ export const getTopRatedTV = (page: string = '1') =>
   fetchTMDB('/tv/top_rated', { page });
 
 export const getTVDetails = (id: string) =>
-  fetchTMDB(`/tv/${id}`, { append_to_response: 'videos,credits,similar' });
+  fetchTMDB(`/tv/${id}`, { append_to_response: 'videos,credits,similar', include_video_language: 'hi,en,ta,te,mr,bn,ml,kn,gu,pa,ja,ko,zh,fr,es,ru,de' });
 
 // Search
 export const searchMulti = (query: string, page: string = '1') =>

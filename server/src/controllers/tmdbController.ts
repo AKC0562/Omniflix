@@ -176,3 +176,39 @@ export const getMoviesByGenre = async (
     next(error);
   }
 };
+
+export const discoverMovies = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    // Collect all query params to string map
+    const params: Record<string, string> = {};
+    Object.keys(req.query).forEach((key) => {
+      params[key] = String(req.query[key]);
+    });
+    const data = await tmdbService.discoverMovies(params);
+    res.json(data);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const discoverTV = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    // Collect all query params to string map
+    const params: Record<string, string> = {};
+    Object.keys(req.query).forEach((key) => {
+      params[key] = String(req.query[key]);
+    });
+    const data = await tmdbService.discoverTV(params);
+    res.json(data);
+  } catch (error) {
+    next(error);
+  }
+};

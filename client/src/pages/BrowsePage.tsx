@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
+import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import HeroBanner from '../components/movie/HeroBanner';
 import MovieRow from '../components/movie/MovieRow';
@@ -13,23 +14,62 @@ interface RowConfig {
 }
 
 export default function BrowsePage() {
+  const { category } = useParams<{ category: string }>();
   const [heroMovies, setHeroMovies] = useState<TMDBMovie[]>([]);
   const [rows, setRows] = useState<{ title: string; movies: TMDBMovie[]; loading: boolean }[]>([]);
   const [heroLoading, setHeroLoading] = useState(true);
 
-  const rowConfigs: RowConfig[] = [
-    { title: 'Trending Now', fetcher: () => tmdbAPI.getTrending() },
-    { title: 'Popular Movies', fetcher: () => tmdbAPI.getPopularMovies() },
-    { title: 'Top Rated', fetcher: () => tmdbAPI.getTopRatedMovies() },
-    { title: 'Now Playing', fetcher: () => tmdbAPI.getNowPlayingMovies() },
-    { title: 'Upcoming', fetcher: () => tmdbAPI.getUpcomingMovies() },
-    { title: 'Popular TV Shows', fetcher: () => tmdbAPI.getPopularTV() },
-    { title: 'Top Rated TV', fetcher: () => tmdbAPI.getTopRatedTV() },
-  ];
+  const rowConfigs = useMemo<RowConfig[]>(() => {
+    if (category === 'tv') {
+      return [
+        { title: 'Top Trending Web Series', fetcher: () => tmdbAPI.discoverTV({ origin_country: 'IN', sort_by: 'popularity.desc' }) },
+        { title: 'All Time Hit Web Series', fetcher: () => tmdbAPI.discoverTV({ sort_by: 'vote_average.desc', 'vote_count.gte': 2000 }) },
+        { title: 'Latest Anime Series', fetcher: () => tmdbAPI.discoverTV({ with_original_language: 'ja', with_genres: 16, sort_by: 'first_air_date.desc', 'vote_count.gte': 10 }) },
+        { title: 'Action', fetcher: () => tmdbAPI.discoverTV({ with_genres: 10759 }) },
+        { title: 'Romance', fetcher: () => tmdbAPI.search('Romance') }, // Using search as a fallback since Romance is often mixed in Drama on TV
+        { title: 'Comedy', fetcher: () => tmdbAPI.discoverTV({ with_genres: 35 }) },
+        { title: 'Sad (Drama)', fetcher: () => tmdbAPI.discoverTV({ with_genres: 18 }) },
+        { title: 'Horror / Mystery', fetcher: () => tmdbAPI.discoverTV({ with_genres: 9648 }) },
+        { title: 'Kids', fetcher: () => tmdbAPI.discoverTV({ with_genres: 10762 }) },
+        { title: 'Adult', fetcher: () => tmdbAPI.discoverTV({ with_keywords: 1009, sort_by: 'popularity.desc' }) } // Using 'adult'/'mature' themes keywords approximations
+      ];
+    }
+
+    if (category === 'movies') {
+      return [
+        { title: 'Top Trending Movies', fetcher: () => tmdbAPI.discoverMovies({ region: 'IN', sort_by: 'popularity.desc' }) },
+        { title: 'All Time Hit Movies', fetcher: () => tmdbAPI.discoverMovies({ sort_by: 'vote_average.desc', 'vote_count.gte': 5000 }) },
+        { title: 'Anime Movies', fetcher: () => tmdbAPI.discoverMovies({ with_original_language: 'ja', with_genres: 16, sort_by: 'popularity.desc' }) },
+        { title: 'Action', fetcher: () => tmdbAPI.discoverMovies({ with_genres: 28 }) },
+        { title: 'Romance', fetcher: () => tmdbAPI.discoverMovies({ with_genres: 10749 }) },
+        { title: 'Comedy', fetcher: () => tmdbAPI.discoverMovies({ with_genres: 35 }) },
+        { title: 'Sad (Drama)', fetcher: () => tmdbAPI.discoverMovies({ with_genres: 18 }) },
+        { title: 'Horror', fetcher: () => tmdbAPI.discoverMovies({ with_genres: 27 }) },
+        { title: 'Kids', fetcher: () => tmdbAPI.discoverMovies({ with_genres: 10751 }) },
+        { title: 'Adult', fetcher: () => tmdbAPI.discoverMovies({ certification_country: 'IN', certification: 'A', sort_by: 'popularity.desc' }) }
+      ];
+    }
+
+    // Default: /browse
+    return [
+      { title: 'Trending Movies', fetcher: () => tmdbAPI.discoverMovies({ region: 'IN', sort_by: 'popularity.desc' }) },
+      { title: 'Trending Web Series', fetcher: () => tmdbAPI.discoverTV({ origin_country: 'IN', sort_by: 'popularity.desc' }) },
+      { title: 'Latest Bollywood', fetcher: () => tmdbAPI.discoverMovies({ with_original_language: 'hi', region: 'IN', sort_by: 'primary_release_date.desc', 'primary_release_date.lte': new Date().toISOString().split('T')[0], 'vote_count.gte': 5 }) },
+      { title: 'Latest Hollywood', fetcher: () => tmdbAPI.discoverMovies({ with_original_language: 'en', sort_by: 'primary_release_date.desc', 'primary_release_date.lte': new Date().toISOString().split('T')[0], 'vote_count.gte': 10 }) },
+      { title: 'Anime Movies', fetcher: () => tmdbAPI.discoverMovies({ with_original_language: 'ja', with_genres: 16, sort_by: 'popularity.desc' }) },
+      { title: 'Cartoon Movies', fetcher: () => tmdbAPI.discoverMovies({ with_genres: 16, with_original_language: 'en', sort_by: 'popularity.desc' }) },
+      { title: 'Marvel', fetcher: () => tmdbAPI.discoverMovies({ with_companies: 420, sort_by: 'popularity.desc' }) },
+      { title: 'DC', fetcher: () => tmdbAPI.discoverMovies({ with_companies: 429, sort_by: 'popularity.desc' }) },
+      { title: 'Harry Potter', fetcher: () => tmdbAPI.search('Harry Potter') },
+    ];
+  }, [category]);
 
   useEffect(() => {
-    // Fetch hero movies
-    tmdbAPI.getTrending('movie', 'day')
+    setHeroLoading(true);
+    // Fetch hero movies based on category
+    const heroFetcher = category === 'tv' ? tmdbAPI.discoverTV({ origin_country: 'IN', sort_by: 'popularity.desc' }) : tmdbAPI.discoverMovies({ region: 'IN', sort_by: 'popularity.desc' });
+    
+    heroFetcher
       .then(({ data }) => setHeroMovies((data as any).results || []))
       .catch(() => {})
       .finally(() => setHeroLoading(false));
@@ -59,7 +99,7 @@ export default function BrowsePage() {
           });
         });
     });
-  }, []);
+  }, [category, rowConfigs]);
 
   return (
     <motion.div
@@ -69,7 +109,7 @@ export default function BrowsePage() {
       className="min-h-screen bg-surface-dark"
     >
       {/* Hero Banner */}
-      {!heroLoading && heroMovies.length > 0 && <HeroBanner movies={heroMovies} />}
+      {!heroLoading && heroMovies.length > 0 && <HeroBanner movies={heroMovies} category={category} />}
       {heroLoading && (
         <div className="w-full h-[85vh] md:h-[90vh] skeleton" />
       )}
