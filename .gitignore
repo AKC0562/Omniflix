@@ -126,9 +126,6 @@ client/build/
 server/build/
 out/
 
-# Screenshots (referenced in README via relative paths)
-screenshorts/
-
 # AI context
 .gemini/
 .gemini
