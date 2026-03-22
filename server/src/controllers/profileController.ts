@@ -118,16 +118,13 @@ export const addToWatchlist = async (
       { 
         _id: req.user!.userId, 
         'profiles._id': profileId,
-        'profiles.watchlist': { $ne: movieId } // Prevent duplicate
       },
       { $addToSet: { 'profiles.$.watchlist': movieId } },
       { new: true }
     );
 
     if (!updatedUser) {
-      // It might be missing user/profile, or it's a duplicate.
-      // Easiest is to just send the current one or a 400.
-      throw new AppError('Could not add to watchlist (might be duplicate or profile missing)', 400);
+      throw new AppError('User or Profile not found', 404);
     }
 
     const profile = updatedUser.profiles.find((p: any) => p._id?.toString() === profileId);

@@ -11,6 +11,9 @@ import MyListPage from './pages/MyListPage';
 import AccountPage from './pages/AccountPage';
 import AdminDashboard from './pages/AdminDashboard';
 
+// Error Pages
+import { NotFoundPage, ErrorPage } from './pages/errors';
+
 // Layout
 import { ProtectedRoute, PublicRoute } from './components/layout/ProtectedRoute';
 import Navbar from './components/layout/Navbar';
@@ -54,8 +57,18 @@ export default function App() {
           }
         />
 
-        {/* Fallback */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+        {/* Error pages */}
+        <Route path="/error/400" element={<ErrorPage code={400} />} />
+        <Route path="/error/401" element={<ErrorPage code={401} />} />
+        <Route path="/error/403" element={<ErrorPage code={403} />} />
+        <Route path="/error/408" element={<ErrorPage code={408} />} />
+        <Route path="/error/429" element={<ErrorPage code={429} />} />
+        <Route path="/error/500" element={<ErrorPage code={500} />} />
+        <Route path="/error/502" element={<ErrorPage code={502} />} />
+        <Route path="/error/503" element={<ErrorPage code={503} />} />
+
+        {/* 404 catch-all */}
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Router>
   );

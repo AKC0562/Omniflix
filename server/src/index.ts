@@ -37,7 +37,9 @@ app.use(
     stream: { write: (message) => logger.http(message.trim()) },
   })
 );
-app.use('/api', apiLimiter);
+if (config.nodeEnv !== 'development') {
+  app.use('/api', apiLimiter);
+}
 
 // Routes
 app.use('/api/auth', authRoutes);

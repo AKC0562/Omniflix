@@ -31,7 +31,7 @@ export default function BrowsePage() {
         { title: 'Sad (Drama)', fetcher: () => tmdbAPI.discoverTV({ with_genres: 18 }) },
         { title: 'Horror / Mystery', fetcher: () => tmdbAPI.discoverTV({ with_genres: 9648 }) },
         { title: 'Kids', fetcher: () => tmdbAPI.discoverTV({ with_genres: 10762 }) },
-        { title: 'Adult', fetcher: () => tmdbAPI.discoverTV({ with_keywords: 1009, sort_by: 'popularity.desc' }) } // Using 'adult'/'mature' themes keywords approximations
+        { title: 'Adult', fetcher: () => tmdbAPI.discoverTV({ with_keywords: '9799|3205|10099|1556', sort_by: 'popularity.desc' }) } // sex, nudity, erotica, etc.
       ];
     }
 
@@ -46,7 +46,7 @@ export default function BrowsePage() {
         { title: 'Sad (Drama)', fetcher: () => tmdbAPI.discoverMovies({ with_genres: 18 }) },
         { title: 'Horror', fetcher: () => tmdbAPI.discoverMovies({ with_genres: 27 }) },
         { title: 'Kids', fetcher: () => tmdbAPI.discoverMovies({ with_genres: 10751 }) },
-        { title: 'Adult', fetcher: () => tmdbAPI.discoverMovies({ certification_country: 'IN', certification: 'A', sort_by: 'popularity.desc' }) }
+        { title: 'Adult', fetcher: () => tmdbAPI.discoverMovies({ certification_country: 'IN', certification: 'A', with_keywords: '9799|3205|10099|1556', sort_by: 'popularity.desc' }) }
       ];
     }
 
@@ -60,7 +60,7 @@ export default function BrowsePage() {
       { title: 'Cartoon Movies', fetcher: () => tmdbAPI.discoverMovies({ with_genres: 16, with_original_language: 'en', sort_by: 'popularity.desc' }) },
       { title: 'Marvel', fetcher: () => tmdbAPI.discoverMovies({ with_companies: 420, sort_by: 'popularity.desc' }) },
       { title: 'DC', fetcher: () => tmdbAPI.discoverMovies({ with_companies: 429, sort_by: 'popularity.desc' }) },
-      { title: 'Harry Potter', fetcher: () => tmdbAPI.search('Harry Potter') },
+      { title: 'Sizzling Hot Movies', fetcher: () => tmdbAPI.discoverMovies({ with_keywords: '9799|3205|10099|1556', sort_by: 'popularity.desc' }) },
     ];
   }, [category]);
 
@@ -68,10 +68,10 @@ export default function BrowsePage() {
     setHeroLoading(true);
     // Fetch hero movies based on category
     const heroFetcher = category === 'tv' ? tmdbAPI.discoverTV({ origin_country: 'IN', sort_by: 'popularity.desc' }) : tmdbAPI.discoverMovies({ region: 'IN', sort_by: 'popularity.desc' });
-    
+
     heroFetcher
       .then(({ data }) => setHeroMovies((data as any).results || []))
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setHeroLoading(false));
 
     // Initialize rows with loading state
@@ -122,7 +122,7 @@ export default function BrowsePage() {
       </div>
 
       <MovieModal />
-      
+
       <Footer />
     </motion.div>
   );

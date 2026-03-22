@@ -9,7 +9,7 @@ import OmnitrixSpinner from '../ui/OmnitrixSpinner';
 
 export default function MovieModal() {
   const { selectedMovie, isModalOpen, closeModal } = useUIStore();
-  const { activeProfile } = useAuthStore();
+  const { activeProfile, setActiveProfile } = useAuthStore();
   const [details, setDetails] = useState<TMDBMovieDetails | null>(null);
   const [imdbData, setImdbData] = useState<IMDbData | null>(null);
   const [loading, setLoading] = useState(false);
@@ -60,11 +60,13 @@ export default function MovieModal() {
     if (!activeProfile || !selectedMovie) return;
     try {
       if (inList) {
-        await profileAPI.removeFromWatchlist(activeProfile._id, selectedMovie.id);
+        const { data } = await profileAPI.removeFromWatchlist(activeProfile._id, selectedMovie.id);
         setInList(false);
+        setActiveProfile({ ...activeProfile, watchlist: data.watchlist });
       } else {
-        await profileAPI.addToWatchlist(activeProfile._id, selectedMovie.id);
+        const { data } = await profileAPI.addToWatchlist(activeProfile._id, selectedMovie.id);
         setInList(true);
+        setActiveProfile({ ...activeProfile, watchlist: data.watchlist });
       }
     } catch { }
   };

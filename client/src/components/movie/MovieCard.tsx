@@ -15,7 +15,7 @@ interface Props {
 export default function MovieCard({ movie, index = 0 }: Props) {
   const [isHovered, setIsHovered] = useState(false);
   const openModal = useUIStore((s) => s.openModal);
-  const { activeProfile } = useAuthStore();
+  const { activeProfile, setActiveProfile } = useAuthStore();
   const isInWatchlist = activeProfile?.watchlist.includes(movie.id) || false;
   const [inList, setInList] = useState(isInWatchlist);
 
@@ -29,11 +29,13 @@ export default function MovieCard({ movie, index = 0 }: Props) {
     if (!activeProfile) return;
     try {
       if (inList) {
-        await profileAPI.removeFromWatchlist(activeProfile._id, movie.id);
+        const { data } = await profileAPI.removeFromWatchlist(activeProfile._id, movie.id);
         setInList(false);
+        setActiveProfile({ ...activeProfile, watchlist: data.watchlist });
       } else {
-        await profileAPI.addToWatchlist(activeProfile._id, movie.id);
+        const { data } = await profileAPI.addToWatchlist(activeProfile._id, movie.id);
         setInList(true);
+        setActiveProfile({ ...activeProfile, watchlist: data.watchlist });
       }
     } catch {}
   };
