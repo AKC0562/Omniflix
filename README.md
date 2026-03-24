@@ -3,7 +3,7 @@
 </p>
 
 <h1 align="center">
-  🟢 OmniFlix — Stream the Omniverse
+   OmniFlix — Stream the Omniverse
 </h1>
 
 <p align="center">
@@ -19,29 +19,29 @@
 
 ---
 
-## ✨ Features
+##  Features
 OmniFlix is a premium, full-stack streaming platform combining **Netflix's layout architecture** with the **Ben 10 Omnitrix aesthetic**. 
 
-- 🎬 **Cinematic UI:** Immersive, auto-rotating hero banners, frosted glassmorphism panels, and horizontal carousels built with **TailwindCSS & Framer Motion**.
-- 👽 **Multi-Profile System:** Support for up to 5 individual user profiles featuring unique alien avatars and isolated watchlists.
-- ⚡ **Redis-Accelerated Data Layer:** Global caching middleware guarantees lightning-fast API responses (~2ms) and dramatically reduces TMDB API rate-limit burn.
-- 🎭 **Actor Details & Global Search:** Advanced multi-categorized search functionality and dedicated cinematic actor profile pages.
-- 🔐 **Robust Security:** JWT-based access/refresh token rotation with a highly fault-tolerant global error interception system.
+-  **Cinematic UI:** Immersive, auto-rotating hero banners, frosted glassmorphism panels, and horizontal carousels built with **TailwindCSS & Framer Motion**.
+-  **Multi-Profile System:** Support for up to 5 individual user profiles featuring unique alien avatars and isolated watchlists.
+-  **Redis-Accelerated Data Layer:** Global caching middleware guarantees lightning-fast API responses (~2ms) and dramatically reduces TMDB API rate-limit burn.
+-  **Actor Details & Global Search:** Advanced multi-categorized search functionality and dedicated cinematic actor profile pages.
+-  **Robust Security:** JWT-based access/refresh token rotation with a highly fault-tolerant global error interception system.
 
 ---
 
-## 📸 Snapshots
+##  Snapshots
 
 *Simply replace the placeholder paths in this README with your actual screenshot files.*
 
 <details>
 <summary><b>Click to expand Platform Previews</b></summary>
 
-| 🏠 Landing & Hero Banner | 👽 Profile Selection |
+|  Landing & Hero Banner |  Profile Selection |
 |:---:|:---:|
 | <img src="/docs/hero-preview.png" alt="Hero Banner" width="400"/> | <img src="/docs/profiles-preview.png" alt="Profiles" width="400"/> |
 
-| 🎬 Cinematic Actor Profiles | 🔍 Categorized Global Search |
+|  Cinematic Actor Profiles |  Categorized Global Search |
 |:---:|:---:|
 | <img src="/docs/actor-preview.png" alt="Actor details" width="400"/> | <img src="/docs/search-preview.png" alt="Search grids" width="400"/> |
 
@@ -49,9 +49,9 @@ OmniFlix is a premium, full-stack streaming platform combining **Netflix's layou
 
 ---
 
-## 🚀 Quick Start
+##  Quick Start
 
-### 1️⃣ Clone & Install
+### 1️. Clone & Install
 ```bash
 git clone https://github.com/your-username/omniflix.git
 cd omniflix
@@ -63,7 +63,7 @@ cd server && npm install
 cd ../client && npm install
 ```
 
-### 2️⃣ Environment Configuration
+### 2️. Environment Configuration
 Create a `.env` in the `server` directory:
 ```env
 PORT=5000
@@ -81,7 +81,7 @@ Create a `.env` in the `client` directory:
 VITE_API_URL=http://localhost:5000/api
 ```
 
-### 3️⃣ Run the Omniverse
+### 3️. Run the Omniverse
 Start your local MongoDB & Redis instances. Then:
 
 ```bash
@@ -93,7 +93,7 @@ npm run dev
 cd client
 npm run dev
 ```
-> 🖥️ View the app at **http://localhost:5173**
+>  View the app at **http://localhost:5173**
 
 ---
 

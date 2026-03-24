@@ -13,7 +13,7 @@ import errorHandler, { AppError } from './middleware/errorHandler';
 
 // Global uncaught exception handler
 process.on('uncaughtException', (err: Error) => {
-  logger.error('UNCAUGHT EXCEPTION! 💥 Shutting down...');
+  logger.error('UNCAUGHT EXCEPTION! ! Shutting down...');
   logger.error(`${err.name}: ${err.message}`, err.stack);
   process.exit(1);
 });
@@ -78,16 +78,16 @@ app.use(errorHandler);
 // Start server
 const server = app.listen(config.port, () => {
   logger.info(`
-  ⚡ OmniFlix Server running
-  🌍 Environment: ${config.nodeEnv}
-  🚀 Port: ${config.port}
-  📡 API: http://localhost:${config.port}/api
+  -> OmniFlix Server running
+  -> Environment: ${config.nodeEnv}
+  -> Port: ${config.port}
+  -> API: http://localhost:${config.port}/api
   `);
 });
 
 // Global unhandled promise rejection handler
 process.on('unhandledRejection', (err: any) => {
-  logger.error('UNHANDLED REJECTION! 💥 Shutting down gracefully...');
+  logger.error('UNHANDLED REJECTION! ! Shutting down gracefully...');
   logger.error(err);
   server.close(() => {
     process.exit(1);

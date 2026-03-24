@@ -16,8 +16,8 @@ redisClient.on('error', (err: any) => {
     logger.error('[Redis] Client Error', err);
   }
 });
-redisClient.on('connect', () => logger.info('[Redis] 🔗 Connected successfully'));
-redisClient.on('ready', () => logger.info('[Redis] 🚀 Ready to cache requests'));
+redisClient.on('connect', () => logger.info('[Redis]  Connected successfully'));
+redisClient.on('ready', () => logger.info('[Redis]  Ready to cache requests'));
 
 export const connectRedis = async () => {
   try {
