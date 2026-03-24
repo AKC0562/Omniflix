@@ -23,6 +23,7 @@ export default function BrowsePage() {
     if (category === 'tv') {
       return [
         { title: 'Top Trending Web Series', fetcher: () => tmdbAPI.discoverTV({ origin_country: 'IN', sort_by: 'popularity.desc' }) },
+        { title: 'Recommended for You', fetcher: () => tmdbAPI.getRecommendations() },
         { title: 'All Time Hit Web Series', fetcher: () => tmdbAPI.discoverTV({ sort_by: 'vote_average.desc', 'vote_count.gte': 2000 }) },
         { title: 'Latest Anime Series', fetcher: () => tmdbAPI.discoverTV({ with_original_language: 'ja', with_genres: 16, sort_by: 'first_air_date.desc', 'vote_count.gte': 10 }) },
         { title: 'Action', fetcher: () => tmdbAPI.discoverTV({ with_genres: 10759 }) },
@@ -38,6 +39,7 @@ export default function BrowsePage() {
     if (category === 'movies') {
       return [
         { title: 'Top Trending Movies', fetcher: () => tmdbAPI.discoverMovies({ region: 'IN', sort_by: 'popularity.desc' }) },
+        { title: 'Recommended for You', fetcher: () => tmdbAPI.getRecommendations() },
         { title: 'All Time Hit Movies', fetcher: () => tmdbAPI.discoverMovies({ sort_by: 'vote_average.desc', 'vote_count.gte': 5000 }) },
         { title: 'Anime Movies', fetcher: () => tmdbAPI.discoverMovies({ with_original_language: 'ja', with_genres: 16, sort_by: 'popularity.desc' }) },
         { title: 'Action', fetcher: () => tmdbAPI.discoverMovies({ with_genres: 28 }) },
@@ -54,6 +56,7 @@ export default function BrowsePage() {
     return [
       { title: 'Trending Movies', fetcher: () => tmdbAPI.discoverMovies({ region: 'IN', sort_by: 'popularity.desc' }) },
       { title: 'Trending Web Series', fetcher: () => tmdbAPI.discoverTV({ origin_country: 'IN', sort_by: 'popularity.desc' }) },
+      { title: 'Recommended for You', fetcher: () => tmdbAPI.getRecommendations() },
       { title: 'Latest Bollywood', fetcher: () => tmdbAPI.discoverMovies({ with_original_language: 'hi', region: 'IN', sort_by: 'primary_release_date.desc', 'primary_release_date.lte': new Date().toISOString().split('T')[0], 'vote_count.gte': 5 }) },
       { title: 'Latest Hollywood', fetcher: () => tmdbAPI.discoverMovies({ with_original_language: 'en', sort_by: 'primary_release_date.desc', 'primary_release_date.lte': new Date().toISOString().split('T')[0], 'vote_count.gte': 10 }) },
       { title: 'Anime Movies', fetcher: () => tmdbAPI.discoverMovies({ with_original_language: 'ja', with_genres: 16, sort_by: 'popularity.desc' }) },

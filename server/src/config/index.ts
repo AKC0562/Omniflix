@@ -20,9 +20,6 @@ const config = {
     apiKey: process.env.OMDB_API_KEY as string,
     baseUrl: process.env.OMDB_BASE_URL as string,
   },
-  redis: {
-    url: process.env.REDIS_URL as string,
-  },
   clientUrl: process.env.CLIENT_URL as string,
   rateLimit: {
     windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000', 10),

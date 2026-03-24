@@ -113,6 +113,8 @@ export const tmdbAPI = {
     api.get(`/tmdb/tv/${id}`),
   search: (q: string, page = 1) =>
     api.get('/tmdb/search', { params: { q, page } }),
+  getRecommendations: () =>
+    api.get('/tmdb/recommendations'),
   getGenres: () =>
     api.get('/tmdb/genres'),
   getMoviesByGenre: (genreId: number, page = 1) =>

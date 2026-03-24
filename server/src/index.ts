@@ -6,7 +6,6 @@ import cookieParser from 'cookie-parser';
 
 import config from './config';
 import connectDB from './config/db';
-import { connectRedis } from './config/redis';
 import logger from './utils/logger';
 import { apiLimiter } from './middleware/rateLimiter';
 import errorHandler, { AppError } from './middleware/errorHandler';
@@ -28,7 +27,6 @@ const app = express();
 
 // Connect to Databases
 connectDB();
-connectRedis();
 
 // Middleware
 app.use(helmet());

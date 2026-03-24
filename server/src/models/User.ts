@@ -2,6 +2,7 @@ import mongoose, { Document, Schema } from 'mongoose';
 import bcrypt from 'bcryptjs';
 
 export interface IProfileDoc {
+  _id?: mongoose.Types.ObjectId;
   name: string;
   avatar: string;
   watchlist: number[];
@@ -121,7 +122,7 @@ UserSchema.methods.comparePassword = async function (
 
 // Remove password from JSON output
 UserSchema.set('toJSON', {
-  transform: (_doc, ret) => {
+  transform: (_doc, ret: any) => {
     delete ret.password;
     delete ret.refreshTokens;
     return ret;

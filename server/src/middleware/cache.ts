@@ -1,27 +1,30 @@
 import { Request, Response, NextFunction } from 'express';
-import redisClient from '../config/redis';
+import NodeCache from 'node-cache';
 import logger from '../utils/logger';
+
+// Initialize cache instance
+export const cache = new NodeCache();
 
 export const cacheMiddleware = (durationInSeconds = 3600) => {
   return async (req: Request, res: Response, next: NextFunction) => {
-    // Only intercept GET requests and only if Redis is successfully connected
-    if (req.method !== 'GET' || !redisClient.isOpen) {
+    // Only intercept GET requests
+    if (req.method !== 'GET') {
       return next();
     }
 
     const key = `omniflix_cache:${req.originalUrl || req.url}`;
 
     try {
-      const cachedData = await redisClient.get(key);
+      const cachedData = cache.get<string>(key);
       
       if (cachedData) {
-        logger.http(`[Redis] ⚡ Cache HIT: ${key}`);
+        logger.http(`[Cache] ⚡ Cache HIT: ${key}`);
         res.setHeader('X-Cache', 'HIT');
         res.setHeader('Content-Type', 'application/json');
         return res.send(cachedData); // Raw send because it's already a JSON string of ApiResponse
       }
 
-      logger.http(`[Redis] 🐌 Cache MISS: ${key}`);
+      logger.http(`[Cache] 🐌 Cache MISS: ${key}`);
       res.setHeader('X-Cache', 'MISS');
 
       // Intercept the final JSON response sent globally
@@ -30,8 +33,11 @@ export const cacheMiddleware = (durationInSeconds = 3600) => {
       (res as any).json = (body: any) => {
         // Only cache successful API responses
         if (body?.success === true) {
-          redisClient.setEx(key, durationInSeconds, JSON.stringify(body))
-            .catch(err => logger.error(`[Redis] Failed to save key: ${key}`, err));
+          try {
+            cache.set(key, JSON.stringify(body), durationInSeconds);
+          } catch (err) {
+            logger.error(`[Cache] Failed to save key: ${key}`, err);
+          }
         }
         
         return originalJson(body);
@@ -39,7 +45,7 @@ export const cacheMiddleware = (durationInSeconds = 3600) => {
 
       next();
     } catch (error) {
-      logger.error('[Redis] Middleware Exception:', error);
+      logger.error('[Cache] Middleware Exception:', error);
       next();
     }
   };

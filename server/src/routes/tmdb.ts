@@ -1,6 +1,7 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import * as tmdbController from '../controllers/tmdbController';
 import { cacheMiddleware } from '../middleware/cache';
+import { optionalAuthenticate } from '../middleware/auth';
 
 const router = Router();
 
@@ -28,7 +29,10 @@ router.get('/tv/top-rated', tmdbController.getTopRatedTV);
 router.get('/tv/:id', tmdbController.getTVDetails);
 
 // Search
-router.get('/search', tmdbController.searchMulti);
+router.get('/search', optionalAuthenticate, tmdbController.searchMulti);
+
+// Recommendations
+router.get('/recommendations', optionalAuthenticate, tmdbController.getPersonalizedRecommendations);
 
 // Actor
 router.get('/actor/:id', tmdbController.getActorDetails);

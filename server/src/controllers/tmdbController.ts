@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import * as tmdbService from '../services/tmdbService';
 import { AppError } from '../middleware/errorHandler';
 import { ApiResponse } from '../utils/ApiResponse';
+import { cache } from '../middleware/cache';
 
 export const getTrending = async (
   req: Request,
@@ -139,9 +140,16 @@ export const searchMulti = async (
 ): Promise<void> => {
   try {
     const { q, query, page = '1' } = req.query;
-    const searchQuery = q || query;
+    const searchQuery = (q || query) as string;
     if (!searchQuery) throw new AppError('Search query required', 400);
-    const data: any = await tmdbService.searchMulti(searchQuery as string, page as string);
+
+    const profileId = req.user?.profileId || req.ip || 'anonymous';
+    const cacheKey = `search_history_${profileId}`;
+    let history = cache.get<string[]>(cacheKey) || [];
+    history = [searchQuery, ...history.filter(h => h.toLowerCase() !== searchQuery.toLowerCase())].slice(0, 5); // Keep top 5 latest searches
+    cache.set(cacheKey, history, 604800); // 7 days
+
+    const data: any = await tmdbService.searchMulti(searchQuery, page as string);
     res.json(new ApiResponse(200, data, 'Search results fetched successfully'));
   } catch (error) {
     next(error);
@@ -231,6 +239,32 @@ export const discoverTV = async (
     });
     const data = await tmdbService.discoverTV(params);
     res.json(new ApiResponse(200, data, 'Data fetched successfully'));
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getPersonalizedRecommendations = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const profileId = req.user?.profileId || req.ip || 'anonymous';
+    const cacheKey = `search_history_${profileId}`;
+    const history = cache.get<string[]>(cacheKey);
+
+    if (history && history.length > 0) {
+      // Pick the most recent search query
+      const recentQuery = history[0];
+      const searchResult: any = await tmdbService.searchMulti(recentQuery, '1');
+      res.json(new ApiResponse(200, searchResult, `Recommended based on your recent search: "${recentQuery}"`));
+      return;
+    }
+
+    // Default to trending if no history
+    const trendingData = await tmdbService.getTrending('all', 'week', '1');
+    res.json(new ApiResponse(200, trendingData, 'Recommended (Trending)'));
   } catch (error) {
     next(error);
   }
