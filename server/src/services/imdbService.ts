@@ -5,7 +5,7 @@ import logger from '../utils/logger';
 // Cache IMDb data for 24 hours (it doesn't change often)
 const cache = new NodeCache({ stdTTL: 86400, checkperiod: 600 });
 
-const OMDB_BASE = 'https://www.omdbapi.com';
+const OMDB_BASE = config.omdb.baseUrl;
 const API_KEY = config.omdb.apiKey;
 
 export interface IMDbRating {
