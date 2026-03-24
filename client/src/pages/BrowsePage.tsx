@@ -106,7 +106,7 @@ export default function BrowsePage() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="min-h-screen bg-surface-dark"
+      className="min-h-screen bg-surface-dark -mt-16 md:-mt-[68px]"
     >
       {/* Hero Banner */}
       {!heroLoading && heroMovies.length > 0 && <HeroBanner movies={heroMovies} category={category} />}

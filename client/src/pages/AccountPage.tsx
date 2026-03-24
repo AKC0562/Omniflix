@@ -21,7 +21,7 @@ export default function AccountPage() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-screen bg-surface-dark pt-24 pb-16 px-4 md:px-12 lg:px-16"
+      className="min-h-screen bg-surface-dark pt-8 pb-16 px-4 md:px-12 lg:px-16"
     >
       <div className="max-w-3xl mx-auto">
         {/* Header */}

@@ -10,6 +10,7 @@ import SearchPage from './pages/SearchPage';
 import MyListPage from './pages/MyListPage';
 import AccountPage from './pages/AccountPage';
 import AdminDashboard from './pages/AdminDashboard';
+import ActorPage from './pages/ActorPage';
 
 // Error Pages
 import { NotFoundPage, ErrorPage } from './pages/errors';
@@ -43,6 +44,7 @@ export default function App() {
           <Route path="/browse" element={<BrowsePage />} />
           <Route path="/browse/:category" element={<BrowsePage />} />
           <Route path="/search" element={<SearchPage />} />
+          <Route path="/actor/:id" element={<ActorPage />} />
           <Route path="/my-list" element={<MyListPage />} />
           <Route path="/account" element={<AccountPage />} />
         </Route>

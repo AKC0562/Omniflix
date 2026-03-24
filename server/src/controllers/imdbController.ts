@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import * as imdbService from '../services/imdbService';
 import * as tmdbService from '../services/tmdbService';
 import { AppError } from '../middleware/errorHandler';
+import { ApiResponse } from '../utils/ApiResponse';
 
 /**
  * GET /api/imdb/:imdbId
@@ -23,7 +24,7 @@ export const getByImdbId = async (
       throw new AppError('IMDb data not found', 404);
     }
 
-    res.json(data);
+    res.json(new ApiResponse(200, data, 'IMDb data fetched successfully'));
   } catch (error) {
     next(error);
   }
@@ -55,7 +56,7 @@ export const getByTmdbMovieId = async (
       throw new AppError('IMDb data not found', 404);
     }
 
-    res.json(data);
+    res.json(new ApiResponse(200, data, 'IMDb data fetched successfully'));
   } catch (error) {
     next(error);
   }
@@ -94,7 +95,7 @@ export const getByTmdbTVId = async (
         throw new AppError('IMDb data not found', 404);
       }
 
-      res.json(data);
+      res.json(new ApiResponse(200, data, 'IMDb data fetched successfully'));
       return;
     }
 
@@ -103,7 +104,7 @@ export const getByTmdbTVId = async (
       throw new AppError('IMDb data not found', 404);
     }
 
-    res.json(data);
+    res.json(new ApiResponse(200, data, 'IMDb data fetched successfully'));
   } catch (error) {
     next(error);
   }
@@ -130,7 +131,7 @@ export const searchByTitle = async (
       throw new AppError('No results found', 404);
     }
 
-    res.json(data);
+    res.json(new ApiResponse(200, data, 'Search results fetched successfully'));
   } catch (error) {
     next(error);
   }

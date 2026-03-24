@@ -10,9 +10,10 @@ import type { TMDBMovie } from '../../types';
 interface Props {
   movie: TMDBMovie;
   index?: number;
+  customClick?: () => void;
 }
 
-export default function MovieCard({ movie, index = 0 }: Props) {
+export default function MovieCard({ movie, index = 0, customClick }: Props) {
   const [isHovered, setIsHovered] = useState(false);
   const openModal = useUIStore((s) => s.openModal);
   const { activeProfile, setActiveProfile } = useAuthStore();
@@ -45,10 +46,10 @@ export default function MovieCard({ movie, index = 0 }: Props) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05, duration: 0.4 }}
-      className="relative flex-shrink-0 w-[160px] md:w-[200px] lg:w-[220px] group cursor-pointer"
+      className="relative flex-shrink-0 w-full md:w-[200px] lg:w-[220px] group cursor-pointer"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      onClick={() => openModal(movie)}
+      onClick={customClick ? customClick : () => openModal(movie)}
     >
       {/* Poster */}
       <div className="relative aspect-[2/3] rounded-lg overflow-hidden bg-surface-card">

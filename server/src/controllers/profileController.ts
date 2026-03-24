@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import User from '../models/User';
 import { AppError } from '../middleware/errorHandler';
+import { ApiResponse } from '../utils/ApiResponse';
 
 export const getProfiles = async (
   req: Request,
@@ -10,7 +11,7 @@ export const getProfiles = async (
   try {
     const user = await User.findById(req.user!.userId);
     if (!user) throw new AppError('User not found', 404);
-    res.json({ profiles: user.profiles });
+    res.json(new ApiResponse(200, { profiles: user.profiles }, 'Profiles fetched successfully'));
   } catch (error) {
     next(error);
   }
@@ -43,7 +44,7 @@ export const createProfile = async (
       { new: true, runValidators: true }
     );
 
-    res.status(201).json({ profiles: updatedUser!.profiles });
+    res.status(201).json(new ApiResponse(201, { profiles: updatedUser!.profiles }, 'Profile created successfully'));
   } catch (error) {
     next(error);
   }
@@ -72,7 +73,7 @@ export const updateProfile = async (
     if (!updatedUser) throw new AppError('User or Profile not found', 404);
 
     const profile = updatedUser.profiles.find((p: any) => p._id?.toString() === profileId);
-    res.json({ profile });
+    res.json(new ApiResponse(200, { profile }, 'Profile updated successfully'));
   } catch (error) {
     next(error);
   }
@@ -98,7 +99,7 @@ export const deleteProfile = async (
       { new: true }
     );
 
-    res.json({ profiles: updatedUser!.profiles });
+    res.json(new ApiResponse(200, { profiles: updatedUser!.profiles }, 'Profile deleted successfully'));
   } catch (error) {
     next(error);
   }
@@ -128,7 +129,7 @@ export const addToWatchlist = async (
     }
 
     const profile = updatedUser.profiles.find((p: any) => p._id?.toString() === profileId);
-    res.json({ watchlist: profile?.watchlist || [] });
+    res.json(new ApiResponse(200, { watchlist: profile?.watchlist || [] }, 'Added to watchlist'));
   } catch (error) {
     next(error);
   }
@@ -151,7 +152,7 @@ export const removeFromWatchlist = async (
     if (!updatedUser) throw new AppError('User or Profile not found', 404);
 
     const profile = updatedUser.profiles.find((p: any) => p._id?.toString() === profileId);
-    res.json({ watchlist: profile?.watchlist || [] });
+    res.json(new ApiResponse(200, { watchlist: profile?.watchlist || [] }, 'Removed from watchlist'));
   } catch (error) {
     next(error);
   }
@@ -170,7 +171,7 @@ export const getWatchlist = async (
     const profile = user.profiles.find((p: any) => p._id?.toString() === profileId);
     if (!profile) throw new AppError('Profile not found', 404);
 
-    res.json({ watchlist: profile.watchlist });
+    res.json(new ApiResponse(200, { watchlist: profile.watchlist }, 'Watchlist fetched successfully'));
   } catch (error) {
     next(error);
   }

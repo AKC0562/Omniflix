@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import User from '../models/User';
 import { generateTokenPair, verifyRefreshToken } from '../services/tokenService';
 import { AppError } from '../middleware/errorHandler';
+import { ApiResponse } from '../utils/ApiResponse';
 import { z } from 'zod';
 
 const registerSchema = z.object({
@@ -63,12 +64,9 @@ export const register = async (
       $push: { refreshTokens: refreshToken },
     });
 
-    res.status(201).json({
-      message: 'Registration successful',
-      user: user.toJSON(),
-      accessToken,
-      refreshToken,
-    });
+    res.status(201).json(
+      new ApiResponse(201, { user: user.toJSON(), accessToken, refreshToken }, 'Registration successful')
+    );
   } catch (error) {
     if (error instanceof z.ZodError) {
       next(new AppError(error.errors[0].message, 400));
@@ -108,12 +106,9 @@ export const login = async (
       $push: { refreshTokens: refreshToken },
     });
 
-    res.json({
-      message: 'Login successful',
-      user: user.toJSON(),
-      accessToken,
-      refreshToken,
-    });
+    res.json(
+      new ApiResponse(200, { user: user.toJSON(), accessToken, refreshToken }, 'Login successful')
+    );
   } catch (error) {
     if (error instanceof z.ZodError) {
       next(new AppError(error.errors[0].message, 400));
@@ -155,10 +150,9 @@ export const refreshAccessToken = async (
       $push: { refreshTokens: tokens.refreshToken },
     });
 
-    res.json({
-      accessToken: tokens.accessToken,
-      refreshToken: tokens.refreshToken,
-    });
+    res.json(
+      new ApiResponse(200, { accessToken: tokens.accessToken, refreshToken: tokens.refreshToken }, 'Token refreshed successfully')
+    );
   } catch (error) {
     next(error);
   }
@@ -178,7 +172,7 @@ export const logout = async (
       });
     }
 
-    res.json({ message: 'Logged out successfully' });
+    res.json(new ApiResponse(200, null, 'Logged out successfully'));
   } catch (error) {
     next(error);
   }
@@ -199,7 +193,7 @@ export const getMe = async (
       throw new AppError('User not found', 404);
     }
 
-    res.json({ user: user.toJSON() });
+    res.json(new ApiResponse(200, { user: user.toJSON() }, 'User fetched'));
   } catch (error) {
     next(error);
   }

@@ -3,6 +3,7 @@
 import { Request, Response, NextFunction } from 'express';
 import User from '../models/User';
 import { AppError } from '../middleware/errorHandler';
+import { ApiResponse } from '../utils/ApiResponse';
 
 /**
  * GET /api/admin/stats
@@ -57,7 +58,7 @@ export const getStats = async (
       ]),
     ]);
 
-    res.json({
+    res.json(new ApiResponse(200, {
       stats: {
         totalUsers,
         totalAdmins,
@@ -69,7 +70,7 @@ export const getStats = async (
           count: entry.count,
         })),
       },
-    });
+    }, 'Stats fetched successfully'));
   } catch (error) {
     next(error);
   }
@@ -120,7 +121,7 @@ export const getUsers = async (
       updatedAt: user.updatedAt,
     }));
 
-    res.json({
+    res.json(new ApiResponse(200, {
       users: enrichedUsers,
       pagination: {
         page,
@@ -128,7 +129,7 @@ export const getUsers = async (
         total,
         totalPages: Math.ceil(total / limit),
       },
-    });
+    }, 'Users fetched successfully'));
   } catch (error) {
     next(error);
   }
@@ -158,10 +159,7 @@ export const deleteUser = async (
 
     await User.findByIdAndDelete(id);
 
-    res.json({
-      message: `User "${user.username}" has been deleted successfully`,
-      deletedUserId: id,
-    });
+    res.json(new ApiResponse(200, { deletedUserId: id }, `User "${user.username}" has been deleted successfully`));
   } catch (error) {
     next(error);
   }
@@ -199,10 +197,7 @@ export const updateUserRole = async (
       throw new AppError('User not found', 404);
     }
 
-    res.json({
-      message: `User "${user.username}" role updated to "${role}"`,
-      user: user.toJSON(),
-    });
+    res.json(new ApiResponse(200, { user: user.toJSON() }, `User "${user.username}" role updated to "${role}"`));
   } catch (error) {
     next(error);
   }

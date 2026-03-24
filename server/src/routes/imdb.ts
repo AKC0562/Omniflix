@@ -1,7 +1,11 @@
 import { Router } from 'express';
 import * as imdbController from '../controllers/imdbController';
+import { cacheMiddleware } from '../middleware/cache';
 
 const router = Router();
+
+// Cache IMDB results heavily (24 hours)
+router.use(cacheMiddleware(86400));
 
 // Search OMDb by title
 router.get('/search', imdbController.searchByTitle);

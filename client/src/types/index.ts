@@ -57,7 +57,29 @@ export interface TMDBMovie {
   adult: boolean;
   video: boolean;
   original_language: string;
-  media_type?: string;
+  media_type?: 'movie' | 'tv' | 'person';
+  profile_path?: string | null;
+  known_for?: TMDBMovie[];
+}
+
+export interface TMDBActorDetails {
+  id: number;
+  name: string;
+  biography: string;
+  birthday: string | null;
+  place_of_birth: string | null;
+  profile_path: string | null;
+  popularity: number;
+  known_for_department: string;
+}
+
+export interface ActorAPIResponse {
+  success: true;
+  data: {
+    actor: TMDBActorDetails;
+    movies: { cast: TMDBMovie[] };
+    tvShows: { cast: TMDBMovie[] };
+  };
 }
 
 export interface TMDBResponse {

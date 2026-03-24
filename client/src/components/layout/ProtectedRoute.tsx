@@ -12,7 +12,9 @@ export function ProtectedRoute() {
   return (
     <>
       <Navbar />
-      <Outlet />
+      <main className="pt-16 md:pt-[68px]">
+        <Outlet />
+      </main>
     </>
   );
 }

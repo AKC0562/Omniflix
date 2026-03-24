@@ -21,7 +21,18 @@ api.interceptors.request.use((config) => {
 
 // Auto-refresh on 401
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // Transparently unwrap standard API Responses back to their original shapes
+    if (response.data && response.data.success !== undefined && response.data.data !== undefined) {
+      const unwrapped = response.data.data;
+      if (unwrapped !== null && typeof unwrapped === 'object' && !Array.isArray(unwrapped)) {
+        response.data = { ...unwrapped, _serverMessage: response.data.message };
+      } else {
+        response.data = unwrapped;
+      }
+    }
+    return response;
+  },
   async (error) => {
     const originalRequest = error.config;
     if (error.response?.status === 401 && !originalRequest._retry) {
@@ -110,6 +121,8 @@ export const tmdbAPI = {
     api.get('/tmdb/discover/movie', { params }),
   discoverTV: (params: Record<string, string | number>) =>
     api.get('/tmdb/discover/tv', { params }),
+  getActorDetails: (id: number | string) =>
+    api.get<import('../types').ActorAPIResponse>(`/tmdb/actor/${id}`),
 };
 
 // ===== IMDb API =====

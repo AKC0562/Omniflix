@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import * as tmdbService from '../services/tmdbService';
 import { AppError } from '../middleware/errorHandler';
+import { ApiResponse } from '../utils/ApiResponse';
 
 export const getTrending = async (
   req: Request,
@@ -11,7 +12,7 @@ export const getTrending = async (
     const { mediaType = 'all', timeWindow = 'week' } = req.params;
     const { page = '1' } = req.query;
     const data = await tmdbService.getTrending(mediaType, timeWindow, page as string);
-    res.json(data);
+    res.json(new ApiResponse(200, data, 'Data fetched successfully'));
   } catch (error) {
     next(error);
   }
@@ -25,7 +26,7 @@ export const getPopularMovies = async (
   try {
     const { page = '1' } = req.query;
     const data = await tmdbService.getPopularMovies(page as string);
-    res.json(data);
+    res.json(new ApiResponse(200, data, 'Data fetched successfully'));
   } catch (error) {
     next(error);
   }
@@ -39,7 +40,7 @@ export const getTopRatedMovies = async (
   try {
     const { page = '1' } = req.query;
     const data = await tmdbService.getTopRatedMovies(page as string);
-    res.json(data);
+    res.json(new ApiResponse(200, data, 'Data fetched successfully'));
   } catch (error) {
     next(error);
   }
@@ -53,7 +54,7 @@ export const getNowPlayingMovies = async (
   try {
     const { page = '1' } = req.query;
     const data = await tmdbService.getNowPlayingMovies(page as string);
-    res.json(data);
+    res.json(new ApiResponse(200, data, 'Data fetched successfully'));
   } catch (error) {
     next(error);
   }
@@ -67,7 +68,7 @@ export const getUpcomingMovies = async (
   try {
     const { page = '1' } = req.query;
     const data = await tmdbService.getUpcomingMovies(page as string);
-    res.json(data);
+    res.json(new ApiResponse(200, data, 'Data fetched successfully'));
   } catch (error) {
     next(error);
   }
@@ -82,7 +83,7 @@ export const getMovieDetails = async (
     const { id } = req.params;
     if (!id) throw new AppError('Movie ID required', 400);
     const data = await tmdbService.getMovieDetails(id);
-    res.json(data);
+    res.json(new ApiResponse(200, data, 'Data fetched successfully'));
   } catch (error) {
     next(error);
   }
@@ -96,7 +97,7 @@ export const getPopularTV = async (
   try {
     const { page = '1' } = req.query;
     const data = await tmdbService.getPopularTV(page as string);
-    res.json(data);
+    res.json(new ApiResponse(200, data, 'Data fetched successfully'));
   } catch (error) {
     next(error);
   }
@@ -110,7 +111,7 @@ export const getTopRatedTV = async (
   try {
     const { page = '1' } = req.query;
     const data = await tmdbService.getTopRatedTV(page as string);
-    res.json(data);
+    res.json(new ApiResponse(200, data, 'Data fetched successfully'));
   } catch (error) {
     next(error);
   }
@@ -125,7 +126,7 @@ export const getTVDetails = async (
     const { id } = req.params;
     if (!id) throw new AppError('TV Show ID required', 400);
     const data = await tmdbService.getTVDetails(id);
-    res.json(data);
+    res.json(new ApiResponse(200, data, 'Data fetched successfully'));
   } catch (error) {
     next(error);
   }
@@ -137,10 +138,32 @@ export const searchMulti = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const { q, page = '1' } = req.query;
-    if (!q) throw new AppError('Search query required', 400);
-    const data = await tmdbService.searchMulti(q as string, page as string);
-    res.json(data);
+    const { q, query, page = '1' } = req.query;
+    const searchQuery = q || query;
+    if (!searchQuery) throw new AppError('Search query required', 400);
+    const data: any = await tmdbService.searchMulti(searchQuery as string, page as string);
+    res.json(new ApiResponse(200, data, 'Search results fetched successfully'));
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getActorDetails = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { id } = req.params;
+    if (!id) throw new AppError('Actor ID required', 400);
+
+    const [actor, movies, tvShows] = await Promise.all([
+      tmdbService.getActorDetails(id),
+      tmdbService.getActorMovieCredits(id),
+      tmdbService.getActorTVCredits(id)
+    ]);
+
+    res.json(new ApiResponse(200, { actor, movies, tvShows }, 'Actor details fetched successfully'));
   } catch (error) {
     next(error);
   }
@@ -156,7 +179,7 @@ export const getGenres = async (
       tmdbService.getMovieGenres(),
       tmdbService.getTVGenres(),
     ]);
-    res.json({ movie: movieGenres, tv: tvGenres });
+    res.json(new ApiResponse(200, { movie: movieGenres, tv: tvGenres }, 'Genres fetched successfully'));
   } catch (error) {
     next(error);
   }
@@ -171,7 +194,7 @@ export const getMoviesByGenre = async (
     const { genreId } = req.params;
     const { page = '1' } = req.query;
     const data = await tmdbService.getMoviesByGenre(genreId, page as string);
-    res.json(data);
+    res.json(new ApiResponse(200, data, 'Data fetched successfully'));
   } catch (error) {
     next(error);
   }
@@ -189,7 +212,7 @@ export const discoverMovies = async (
       params[key] = String(req.query[key]);
     });
     const data = await tmdbService.discoverMovies(params);
-    res.json(data);
+    res.json(new ApiResponse(200, data, 'Data fetched successfully'));
   } catch (error) {
     next(error);
   }
@@ -207,7 +230,7 @@ export const discoverTV = async (
       params[key] = String(req.query[key]);
     });
     const data = await tmdbService.discoverTV(params);
-    res.json(data);
+    res.json(new ApiResponse(200, data, 'Data fetched successfully'));
   } catch (error) {
     next(error);
   }

@@ -95,6 +95,16 @@ export const discoverTV = (params: Record<string, string>) =>
 export const getMoviesByGenre = (genreId: string, page: string = '1') =>
   fetchTMDB('/discover/movie', { with_genres: genreId, page, sort_by: 'popularity.desc' });
 
+// Person / Actor
+export const getActorDetails = (id: string) =>
+  fetchTMDB(`/person/${id}`);
+
+export const getActorMovieCredits = (id: string) =>
+  fetchTMDB(`/person/${id}/movie_credits`);
+
+export const getActorTVCredits = (id: string) =>
+  fetchTMDB(`/person/${id}/tv_credits`);
+
 // External IDs (for IMDb integration)
 export const getExternalIds = (mediaType: 'movie' | 'tv', id: string) =>
   fetchTMDB(`/${mediaType}/${id}/external_ids`);

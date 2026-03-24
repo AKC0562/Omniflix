@@ -1,7 +1,11 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import * as tmdbController from '../controllers/tmdbController';
+import { cacheMiddleware } from '../middleware/cache';
 
 const router = Router();
+
+// Cache all TMDB routes for 1 hour (3600 seconds)
+router.use(cacheMiddleware(3600));
 
 // Trending
 router.get('/trending/:mediaType/:timeWindow', tmdbController.getTrending);
@@ -25,6 +29,9 @@ router.get('/tv/:id', tmdbController.getTVDetails);
 
 // Search
 router.get('/search', tmdbController.searchMulti);
+
+// Actor
+router.get('/actor/:id', tmdbController.getActorDetails);
 
 // Discover
 router.get('/discover/movie', tmdbController.discoverMovies);
