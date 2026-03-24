@@ -127,5 +127,5 @@ Open **http://localhost:5173**
 ---
 
 <p align="center">
-  <img src="https://img.shields.io/badge/⚡-IT'S_HERO_TIME-00FF41?style=for-the-badge&labelColor=0A1A0F" alt="Hero Time"/>
+  <img src="https://img.shields.io/badge/!!-IT'S_HERO_TIME-00FF41?style=for-the-badge&labelColor=0A1A0F" alt="Hero Time"/>
 </p>
