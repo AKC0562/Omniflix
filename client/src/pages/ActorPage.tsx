@@ -20,15 +20,41 @@ export default function ActorPage() {
   useEffect(() => {
     if (!id) return;
     setLoading(true);
+
+    // Note: The backend already uses Promise.all() to fetch these specific TMDB endpoints:
+    // /person/{id}, /person/{id}/movie_credits, and /person/{id}/tv_credits.
     tmdbAPI.getActorDetails(id)
       .then((res) => {
-        setActor(res.data.data.actor);
-        setMovies(res.data.data.movies.cast || []);
-        // Cast media_type to 'tv' so clicks open it correctly if needed
-        const tv = (res.data.data.tvShows.cast || []).map(t => ({ ...t, media_type: 'tv' as const }));
+        // The Axios response interceptor in api.ts automatically unwraps the { success, data } object.
+        // Thus, `res.data` directly contains { actor, movies, tvShows }.
+        const data = res.data as any;
+
+        if (!data) {
+          console.error("No data received");
+          return;
+        }
+
+        // Only set null if confirmed empty
+        if (!data.actor) {
+          console.warn("Actor missing in response");
+          setActor(null);
+          return;
+        }
+
+        setActor(data.actor);
+        setMovies(data.movies?.cast || []);
+
+        const tv = (data.tvShows?.cast || []).map((t: TMDBMovie) => ({
+          ...t,
+          media_type: 'tv' as const
+        }));
+
         setTvShows(tv);
       })
-      .catch((err) => console.error('Failed to load actor details', err))
+      .catch((err) => {
+        console.error('Failed to load actor details:', err);
+        setActor(null);
+      })
       .finally(() => setLoading(false));
   }, [id]);
 
@@ -64,10 +90,10 @@ export default function ActorPage() {
       className="min-h-screen bg-surface-dark"
     >
       <div className="max-w-[1920px] mx-auto pt-8 md:pt-16 pb-20">
-        
+
         {/* Back Button */}
         <div className="px-4 md:px-12 lg:px-16 mb-6">
-          <button 
+          <button
             onClick={() => navigate(-1)}
             className="flex items-center gap-2 text-text-secondary hover:text-white transition-colors"
           >
@@ -79,7 +105,7 @@ export default function ActorPage() {
         {/* Actor Profile Section */}
         <div className="px-4 md:px-12 lg:px-16 flex flex-col md:flex-row gap-8 lg:gap-16 mb-16">
           {/* Left: Image */}
-          <motion.div 
+          <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.2 }}
@@ -87,8 +113,8 @@ export default function ActorPage() {
           >
             {actor.profile_path ? (
               <div className="relative aspect-[2/3] rounded-2xl overflow-hidden shadow-2xl glass-border">
-                <img 
-                  src={profileImage} 
+                <img
+                  src={profileImage}
                   alt={actor.name}
                   className="w-full h-full object-cover"
                 />
@@ -102,7 +128,7 @@ export default function ActorPage() {
           </motion.div>
 
           {/* Right: Info */}
-          <motion.div 
+          <motion.div
             initial={{ x: 20, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.3 }}
@@ -114,27 +140,27 @@ export default function ActorPage() {
 
             {/* Meta Info */}
             <div className="flex flex-wrap items-center gap-6 mb-8 text-sm md:text-base text-text-secondary">
-               <div className="flex items-center gap-2">
-                 <FiStar className="text-omnitrix-green" />
-                 <span>Popularity: {actor.popularity.toFixed(1)}</span>
-               </div>
-               <div className="flex items-center gap-2">
-                 <span className="bg-omnitrix-green/20 text-omnitrix-green px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider">
-                   {actor.known_for_department}
-                 </span>
-               </div>
-               {actor.birthday && (
-                 <div className="flex items-center gap-2">
-                   <FiCalendar className="text-text-muted" />
-                   <span>{actor.birthday}</span>
-                 </div>
-               )}
-               {actor.place_of_birth && (
-                 <div className="flex items-center gap-2">
-                   <FiMapPin className="text-text-muted" />
-                   <span>{actor.place_of_birth}</span>
-                 </div>
-               )}
+              <div className="flex items-center gap-2">
+                <FiStar className="text-omnitrix-green" />
+                <span>Popularity: {actor.popularity.toFixed(1)}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="bg-omnitrix-green/20 text-omnitrix-green px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider">
+                  {actor.known_for_department}
+                </span>
+              </div>
+              {actor.birthday && (
+                <div className="flex items-center gap-2">
+                  <FiCalendar className="text-text-muted" />
+                  <span>{actor.birthday}</span>
+                </div>
+              )}
+              {actor.place_of_birth && (
+                <div className="flex items-center gap-2">
+                  <FiMapPin className="text-text-muted" />
+                  <span>{actor.place_of_birth}</span>
+                </div>
+              )}
             </div>
 
             {/* Biography */}
@@ -147,7 +173,7 @@ export default function ActorPage() {
                   ))}
                 </div>
                 {actor.biography.length > 300 && (
-                  <button 
+                  <button
                     onClick={() => setExpandedBio(!expandedBio)}
                     className="mt-2 text-omnitrix-green hover:text-white font-medium transition-colors"
                   >
@@ -174,7 +200,7 @@ export default function ActorPage() {
         )}
 
       </div>
-      
+
       <MovieModal />
       <Footer />
     </motion.div>

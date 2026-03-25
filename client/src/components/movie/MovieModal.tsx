@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { FiX, FiPlay, FiPlus, FiCheck, FiStar, FiClock, FiCalendar, FiAward, FiDollarSign, FiGlobe, FiExternalLink, FiUser, FiEdit3 } from 'react-icons/fi';
 import { useUIStore } from '../../store/uiStore';
 import { useAuthStore } from '../../store/authStore';
@@ -24,26 +25,56 @@ export default function MovieModal() {
     setImdbData(null);
     setIsPlayingTrailer(false);
 
-    const mediaType = selectedMovie.media_type === 'tv' || selectedMovie.name ? 'tv' : 'movie';
+    const mediaType = selectedMovie.media_type === 'tv' || (selectedMovie.name && !selectedMovie.title) ? 'tv' : 'movie';
     const fetchFn = mediaType === 'tv'
       ? tmdbAPI.getTVDetails(selectedMovie.id)
       : tmdbAPI.getMovieDetails(selectedMovie.id);
 
     fetchFn
-      .then(({ data }) => {
-        setDetails(data as TMDBMovieDetails);
-        // Now fetch IMDb data in parallel
+      .then(async ({ data }) => {
+        // 1. Set TMDB Details
+        const movieDetails = data as TMDBMovieDetails & { external_ids?: { imdb_id?: string } };
+        setDetails(movieDetails);
+        
+        // 2. Fetch IMDb data
         setImdbLoading(true);
-        const imdbFetch = mediaType === 'tv'
-          ? imdbAPI.getByTmdbTVId(selectedMovie.id)
-          : imdbAPI.getByTmdbMovieId(selectedMovie.id);
+        try {
+          // Extract imdb_id. TV Shows might not have it unless external_ids is included.
+          let targetImdbId = movieDetails.imdb_id || movieDetails.external_ids?.imdb_id;
 
-        imdbFetch
-          .then(({ data: imdb }) => setImdbData(imdb))
-          .catch(() => setImdbData(null))
-          .finally(() => setImdbLoading(false));
+          if (targetImdbId) {
+            // Fetch directly using the specific imdbId
+            const { data: imdb } = await imdbAPI.getByImdbId(targetImdbId);
+            setImdbData(imdb);
+          } else {
+            // Fallback for missing imdb_id (e.g., standard TV Show response)
+            // Attempt to search OMDb by title and release year
+            const searchTitle = movieDetails.name || movieDetails.title || selectedMovie.name || selectedMovie.title;
+            const searchYear = (movieDetails.first_air_date || movieDetails.release_date || '').split('-')[0];
+
+            if (searchTitle) {
+              const { data: searchRes } = await imdbAPI.searchByTitle(searchTitle, searchYear);
+              // searchRes is raw OMDb data. We need to fetch via getByImdbId to get enriched format.
+              if (searchRes && (searchRes as any).imdbID) {
+                const { data: enrichedImdb } = await imdbAPI.getByImdbId((searchRes as any).imdbID);
+                setImdbData(enrichedImdb);
+              } else {
+                setImdbData(null);
+              }
+            } else {
+              setImdbData(null);
+            }
+          }
+        } catch (error) {
+          console.error('Failed to fetch IMDb data:', error);
+          setImdbData(null);
+        } finally {
+          setImdbLoading(false);
+        }
       })
-      .catch(() => { })
+      .catch((error) => {
+        console.error('Failed to fetch TMDB details:', error);
+      })
       .finally(() => setLoading(false));
 
     setInList(activeProfile?.watchlist.includes(selectedMovie.id) || false);
@@ -461,16 +492,30 @@ export default function MovieModal() {
 
 function CastCard({ person }: { person: TMDBCast }) {
   const img = getImageUrl(person.profile_path, 'w185');
+  const navigate = useNavigate();
+  const { closeModal } = useUIStore();
+
+  const handleClick = () => {
+    closeModal();
+    navigate(`/actor/${person.id}`);
+  };
+
   return (
-    <div className="flex-shrink-0 w-20 text-center">
-      <div className="w-16 h-16 mx-auto rounded-full overflow-hidden bg-surface-card border border-omnitrix-green/10 mb-1">
+    <div
+      className="flex-shrink-0 w-20 text-center cursor-pointer group"
+      onClick={handleClick}
+      role="link"
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === 'Enter') handleClick(); }}
+    >
+      <div className="w-16 h-16 mx-auto rounded-full overflow-hidden bg-surface-card border border-omnitrix-green/10 mb-1 transition-all group-hover:border-omnitrix-green/60 group-hover:shadow-[0_0_10px_rgba(34,197,94,0.3)]">
         {img ? (
           <img src={img} alt={person.name} className="w-full h-full object-cover" loading="lazy" />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-lg text-text-muted">👤</div>
         )}
       </div>
-      <p className="text-xs text-text-primary truncate font-body">{person.name}</p>
+      <p className="text-xs text-text-primary truncate font-body group-hover:text-omnitrix-green transition-colors">{person.name}</p>
       <p className="text-[10px] text-text-muted truncate">{person.character}</p>
     </div>
   );
