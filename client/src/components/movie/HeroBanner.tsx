@@ -52,14 +52,14 @@ export default function HeroBanner({ movies, category }: Props) {
           )}
 
           {/* Gradients */}
-          <div className="absolute inset-0 bg-gradient-to-r from-surface-dark via-surface-dark/60 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-t from-surface-dark via-transparent to-surface-dark/30" />
-          <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-surface-dark to-transparent" />
+          <div className="absolute inset-0 `bg-gradient-to-r` from-surface-dark via-surface-dark/60 to-transparent" />
+          <div className="absolute inset-0 `bg-gradient-to-t` from-surface-dark via-transparent to-surface-dark/30" />
+          <div className="absolute bottom-0 left-0 right-0 h-40 `bg-gradient-to-t` from-surface-dark to-transparent" />
 
           {/* Sci-fi scan line */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-[0.03]">
             <div
-              className="absolute left-0 right-0 h-[2px] bg-omnitrix-green"
+              className="absolute left-0 right-0 `h-[2px]` bg-omnitrix-green"
               style={{ animation: 'scan-line 4s linear infinite' }}
             />
           </div>

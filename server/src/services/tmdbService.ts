@@ -17,6 +17,9 @@ const buildUrl = (path: string, params: Record<string, string> = {}): string => 
   return url.toString();
 };
 
+const MAX_RETRIES = 3;
+const RETRY_DELAY_MS = 500;
+
 const fetchTMDB = async <T>(path: string, params: Record<string, string> = {}): Promise<T> => {
   const cacheKey = `${path}:${JSON.stringify(params)}`;
   const cached = cache.get<T>(cacheKey);
@@ -26,16 +29,35 @@ const fetchTMDB = async <T>(path: string, params: Record<string, string> = {}): 
   }
 
   const url = buildUrl(path, params);
-  logger.debug(`Fetching TMDB: ${path}`);
 
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error(`TMDB API Error: ${response.status} ${response.statusText}`);
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      logger.debug(`Fetching TMDB: ${path} (attempt ${attempt})`);
+
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`TMDB API Error: ${response.status} ${response.statusText}`);
+      }
+
+      const data = (await response.json()) as T;
+      cache.set(cacheKey, data);
+      return data;
+    } catch (error: any) {
+      const isNetworkError = error?.message === 'fetch failed' || error?.code === 'UND_ERR_CONNECT_TIMEOUT' || error?.cause?.code === 'ECONNRESET';
+
+      if (isNetworkError && attempt < MAX_RETRIES) {
+        const delay = RETRY_DELAY_MS * Math.pow(2, attempt - 1);
+        logger.warn(`TMDB fetch failed (attempt ${attempt}/${MAX_RETRIES}), retrying in ${delay}ms: ${path}`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        continue;
+      }
+
+      throw error;
+    }
   }
 
-  const data = (await response.json()) as T;
-  cache.set(cacheKey, data);
-  return data;
+  // Should not reach here, but TypeScript needs it
+  throw new Error(`TMDB fetch failed after ${MAX_RETRIES} attempts: ${path}`);
 };
 
 // Movies
@@ -55,7 +77,7 @@ export const getUpcomingMovies = (page: string = '1') =>
   fetchTMDB('/movie/upcoming', { page });
 
 export const getMovieDetails = (id: string) =>
-  fetchTMDB(`/movie/${id}`, { append_to_response: 'videos,credits,similar', include_video_language: 'hi,en,ta,te,mr,bn,ml,kn,gu,pa,ja,ko,zh,fr,es,ru,de' });
+  fetchTMDB(`/movie/${id}`, { append_to_response: 'videos,credits,similar,external_ids', include_video_language: 'hi,en,ta,te,mr,bn,ml,kn,gu,pa,ja,ko,zh,fr,es,ru,de' });
 
 export const getMovieVideos = (id: string) =>
   fetchTMDB(`/movie/${id}/videos`);
@@ -68,7 +90,7 @@ export const getTopRatedTV = (page: string = '1') =>
   fetchTMDB('/tv/top_rated', { page });
 
 export const getTVDetails = (id: string) =>
-  fetchTMDB(`/tv/${id}`, { append_to_response: 'videos,credits,similar', include_video_language: 'hi,en,ta,te,mr,bn,ml,kn,gu,pa,ja,ko,zh,fr,es,ru,de' });
+  fetchTMDB(`/tv/${id}`, { append_to_response: 'videos,credits,similar,external_ids', include_video_language: 'hi,en,ta,te,mr,bn,ml,kn,gu,pa,ja,ko,zh,fr,es,ru,de' });
 
 // Search
 export const searchMulti = (query: string, page: string = '1') =>

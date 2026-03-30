@@ -26,56 +26,65 @@ export default function MovieModal() {
     setIsPlayingTrailer(false);
 
     const mediaType = selectedMovie.media_type === 'tv' || (selectedMovie.name && !selectedMovie.title) ? 'tv' : 'movie';
-    const fetchFn = mediaType === 'tv'
-      ? tmdbAPI.getTVDetails(selectedMovie.id)
-      : tmdbAPI.getMovieDetails(selectedMovie.id);
 
-    fetchFn
-      .then(async ({ data }) => {
-        // 1. Set TMDB Details
-        const movieDetails = data as TMDBMovieDetails & { external_ids?: { imdb_id?: string } };
+    const fetchAllData = async () => {
+      // ===== STEP 1: Fetch TMDB Details =====
+      let movieDetails: (TMDBMovieDetails & { external_ids?: { imdb_id?: string } }) | null = null;
+      try {
+        const { data } = mediaType === 'tv'
+          ? await tmdbAPI.getTVDetails(selectedMovie.id)
+          : await tmdbAPI.getMovieDetails(selectedMovie.id);
+        movieDetails = data as TMDBMovieDetails & { external_ids?: { imdb_id?: string } };
         setDetails(movieDetails);
-        
-        // 2. Fetch IMDb data
-        setImdbLoading(true);
-        try {
-          // Extract imdb_id. TV Shows might not have it unless external_ids is included.
-          let targetImdbId = movieDetails.imdb_id || movieDetails.external_ids?.imdb_id;
+      } catch (error) {
+        console.error('Failed to fetch TMDB details:', error);
+        setLoading(false);
+        return; // Can't do anything without TMDB details
+      }
 
-          if (targetImdbId) {
-            // Fetch directly using the specific imdbId
-            const { data: imdb } = await imdbAPI.getByImdbId(targetImdbId);
-            setImdbData(imdb);
-          } else {
-            // Fallback for missing imdb_id (e.g., standard TV Show response)
-            // Attempt to search OMDb by title and release year
-            const searchTitle = movieDetails.name || movieDetails.title || selectedMovie.name || selectedMovie.title;
-            const searchYear = (movieDetails.first_air_date || movieDetails.release_date || '').split('-')[0];
+      setLoading(false);
 
-            if (searchTitle) {
+      // ===== STEP 2: Fetch IMDb data (non-blocking) =====
+      setImdbLoading(true);
+      try {
+        // Extract imdb_id — movies have it at top level, TV shows need external_ids
+        let targetImdbId = movieDetails.imdb_id || movieDetails.external_ids?.imdb_id;
+
+        if (targetImdbId) {
+          // Fetch directly using the specific imdbId
+          const { data: imdb } = await imdbAPI.getByImdbId(targetImdbId);
+          setImdbData(imdb);
+        } else {
+          // Fallback: search OMDb by title and release year
+          const searchTitle = movieDetails.name || movieDetails.title || selectedMovie.name || selectedMovie.title;
+          const searchYear = (movieDetails.first_air_date || movieDetails.release_date || '').split('-')[0];
+
+          if (searchTitle) {
+            try {
               const { data: searchRes } = await imdbAPI.searchByTitle(searchTitle, searchYear);
-              // searchRes is raw OMDb data. We need to fetch via getByImdbId to get enriched format.
               if (searchRes && (searchRes as any).imdbID) {
                 const { data: enrichedImdb } = await imdbAPI.getByImdbId((searchRes as any).imdbID);
                 setImdbData(enrichedImdb);
               } else {
                 setImdbData(null);
               }
-            } else {
+            } catch {
+              // OMDb search failed (404 or network error) — gracefully degrade
               setImdbData(null);
             }
+          } else {
+            setImdbData(null);
           }
-        } catch (error) {
-          console.error('Failed to fetch IMDb data:', error);
-          setImdbData(null);
-        } finally {
-          setImdbLoading(false);
         }
-      })
-      .catch((error) => {
-        console.error('Failed to fetch TMDB details:', error);
-      })
-      .finally(() => setLoading(false));
+      } catch (error) {
+        console.error('Failed to fetch IMDb data:', error);
+        setImdbData(null);
+      } finally {
+        setImdbLoading(false);
+      }
+    };
+
+    fetchAllData();
 
     setInList(activeProfile?.watchlist.includes(selectedMovie.id) || false);
   }, [selectedMovie, isModalOpen]);

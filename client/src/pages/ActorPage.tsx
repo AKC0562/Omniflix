@@ -16,28 +16,27 @@ export default function ActorPage() {
   const [tvShows, setTvShows] = useState<TMDBMovie[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedBio, setExpandedBio] = useState(false);
+  const [error, setError] = useState(false);
 
-  useEffect(() => {
+  const fetchActor = () => {
     if (!id) return;
     setLoading(true);
+    setError(false);
 
-    // Note: The backend already uses Promise.all() to fetch these specific TMDB endpoints:
-    // /person/{id}, /person/{id}/movie_credits, and /person/{id}/tv_credits.
     tmdbAPI.getActorDetails(id)
       .then((res) => {
-        // The Axios response interceptor in api.ts automatically unwraps the { success, data } object.
-        // Thus, `res.data` directly contains { actor, movies, tvShows }.
         const data = res.data as any;
 
         if (!data) {
           console.error("No data received");
+          setError(true);
           return;
         }
 
-        // Only set null if confirmed empty
         if (!data.actor) {
           console.warn("Actor missing in response");
           setActor(null);
+          setError(true);
           return;
         }
 
@@ -54,8 +53,13 @@ export default function ActorPage() {
       .catch((err) => {
         console.error('Failed to load actor details:', err);
         setActor(null);
+        setError(true);
       })
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    fetchActor();
   }, [id]);
 
   if (loading) {
@@ -66,13 +70,28 @@ export default function ActorPage() {
     );
   }
 
-  if (!actor) {
+  if (!actor || error) {
     return (
       <div className="min-h-screen bg-surface-dark pt-24 px-8 flex flex-col items-center justify-center text-center">
-        <h2 className="text-2xl font-display font-bold text-white mb-4">Actor Not Found</h2>
-        <button onClick={() => navigate(-1)} className="text-omnitrix-green hover:underline">
-          Go Back
-        </button>
+        <h2 className="text-2xl font-display font-bold text-white mb-4">
+          {error ? 'Failed to Load Actor' : 'Actor Not Found'}
+        </h2>
+        <p className="text-text-muted mb-6 font-body">
+          {error ? 'There was a network issue. Please try again.' : 'The actor you\'re looking for doesn\'t exist.'}
+        </p>
+        <div className="flex gap-4">
+          {error && (
+            <button
+              onClick={fetchActor}
+              className="px-6 py-2 bg-omnitrix-green text-surface-dark font-display font-bold rounded-lg hover:bg-omnitrix-glow transition-colors"
+            >
+              Retry
+            </button>
+          )}
+          <button onClick={() => navigate(-1)} className="text-omnitrix-green hover:underline">
+            Go Back
+          </button>
+        </div>
       </div>
     );
   }

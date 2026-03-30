@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiSearch, FiX, FiClock, FiStar, FiCalendar, FiUser, FiFilm, FiTv } from 'react-icons/fi';
@@ -101,9 +101,9 @@ export default function SearchPage() {
     }
   };
 
-  const movies = results.filter((r) => r.media_type === 'movie' || (!r.media_type && r.profile_path === undefined));
-  const tvShows = results.filter((r) => r.media_type === 'tv');
-  const actors = results.filter((r) => r.media_type === 'person' || r.profile_path !== undefined);
+  const movies = useMemo(() => results.filter((r) => r.media_type === 'movie' || (!r.media_type && r.profile_path === undefined)), [results]);
+  const tvShows = useMemo(() => results.filter((r) => r.media_type === 'tv'), [results]);
+  const actors = useMemo(() => results.filter((r) => r.media_type === 'person' || r.profile_path !== undefined), [results]);
 
   // Total valid items
   const hasResults = movies.length > 0 || tvShows.length > 0 || actors.length > 0;

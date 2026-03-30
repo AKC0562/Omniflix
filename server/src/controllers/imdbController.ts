@@ -21,7 +21,8 @@ export const getByImdbId = async (
 
     const data = await imdbService.getEnrichedData(imdbId);
     if (!data) {
-      throw new AppError('IMDb data not found', 404);
+      res.json(new ApiResponse(200, null, 'IMDb data not found'));
+      return;
     }
 
     res.json(new ApiResponse(200, data, 'IMDb data fetched successfully'));
@@ -128,7 +129,9 @@ export const searchByTitle = async (
       year as string | undefined
     );
     if (!data) {
-      throw new AppError('No results found', 404);
+      // Return 200 with null data instead of 404 — let client handle gracefully
+      res.json(new ApiResponse(200, null, 'No results found'));
+      return;
     }
 
     res.json(new ApiResponse(200, data, 'Search results fetched successfully'));
