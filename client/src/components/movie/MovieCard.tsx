@@ -46,23 +46,23 @@ export default function MovieCard({ movie, index = 0, customClick }: Props) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05, duration: 0.4 }}
-      className="relative flex-shrink-0 w-full md:w-[200px] lg:w-[220px] group cursor-pointer"
+      className="relative flex-shrink-0 w-48 md:w-64 group cursor-pointer"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={customClick ? customClick : () => openModal(movie)}
     >
       {/* Poster */}
-      <div className="relative aspect-[2/3] rounded-lg overflow-hidden bg-surface-card">
+      <div className="relative aspect-[2/3] bg-surface-container-low overflow-hidden rounded-lg shadow-xl shadow-black/50 group-hover:shadow-[0_0_20px_rgba(142,255,113,0.15)] transition-all object-cover duration-500 border border-transparent group-hover:border-primary/30">
         {poster ? (
           <img
             src={poster}
             alt={title}
             loading="lazy"
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-surface-card">
-            <span className="text-3xl">🎬</span>
+          <div className="w-full h-full flex items-center justify-center bg-surface-container-low text-on-surface-variant">
+            <span className="material-symbols-outlined text-4xl">movie</span>
           </div>
         )}
 
@@ -70,62 +70,63 @@ export default function MovieCard({ movie, index = 0, customClick }: Props) {
         <motion.div
           initial={false}
           animate={{ opacity: isHovered ? 1 : 0 }}
-          className="absolute inset-0 bg-gradient-to-t from-surface-dark via-surface-dark/50 to-transparent"
+          className="absolute inset-0 bg-black/60 backdrop-blur-[2px] transition-all flex flex-col justify-end p-4"
         >
-          {/* Omnitrix glow border */}
-          <div className="absolute inset-0 rounded-lg border border-omnitrix-green/40 opacity-0 group-hover:opacity-100 transition-opacity" />
-
           {/* Action buttons */}
-          <div className="absolute bottom-3 left-3 right-3 flex items-center gap-2">
+          <div className="flex justify-center items-center gap-4 mb-2">
             <motion.button
               whileHover={{ scale: 1.15 }}
               whileTap={{ scale: 0.9 }}
-              className="w-8 h-8 rounded-full bg-omnitrix-green flex items-center justify-center text-surface-dark shadow-lg shadow-omnitrix-green/30"
+              className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-on-primary shadow-[0_0_20px_rgba(142,255,113,0.4)]"
               aria-label="Play"
             >
-              <FiPlay size={14} fill="currentColor" />
+              <span className="material-symbols-outlined text-3xl" style={{ fontVariationSettings: "'FILL' 1" }}>play_arrow</span>
             </motion.button>
-
-            <motion.button
+          </div>
+          
+          <div className="flex items-center justify-between mt-4">
+             <motion.button
               whileHover={{ scale: 1.15 }}
               whileTap={{ scale: 0.9 }}
               onClick={toggleWatchlist}
-              className={`w-8 h-8 rounded-full border flex items-center justify-center transition-colors ${
+              className={`w-10 h-10 rounded-full border flex items-center justify-center transition-colors ${
                 inList
-                  ? 'border-omnitrix-green bg-omnitrix-green/20 text-omnitrix-green'
-                  : 'border-text-muted/50 text-text-secondary hover:border-omnitrix-green/50'
+                  ? 'border-primary bg-primary/20 text-primary'
+                  : 'border-outline text-on-surface hover:border-primary hover:text-primary'
               }`}
               aria-label={inList ? 'Remove from list' : 'Add to list'}
             >
-              {inList ? <FiCheck size={14} /> : <FiPlus size={14} />}
+              <span className="material-symbols-outlined">{inList ? 'check' : 'add'}</span>
             </motion.button>
-
+            
             <motion.button
               whileHover={{ scale: 1.15 }}
               whileTap={{ scale: 0.9 }}
               onClick={(e) => { e.stopPropagation(); openModal(movie); }}
-              className="w-8 h-8 rounded-full border border-text-muted/50 text-text-secondary flex items-center justify-center ml-auto hover:border-omnitrix-green/50 transition-colors"
+              className="w-10 h-10 rounded-full border border-outline text-on-surface flex items-center justify-center hover:border-primary hover:text-primary transition-colors"
               aria-label="More info"
             >
-              <FiChevronDown size={14} />
+              <span className="material-symbols-outlined">info</span>
             </motion.button>
           </div>
         </motion.div>
 
-        {/* Rating badge */}
+        {/* Rating badge (Always visible in Top corners) */}
         {rating && parseFloat(rating) > 0 && (
-          <div className="absolute top-2 right-2 px-2 py-0.5 rounded bg-surface-dark/80 border border-omnitrix-green/30 text-omnitrix-green text-xs font-display">
-            ★ {rating}
+          <div className="absolute top-2 right-2 px-2 py-1 rounded bg-black/80 backdrop-blur-md border border-primary/20 text-primary text-xs font-bold flex items-center gap-1 shadow-lg">
+            <span className="material-symbols-outlined text-[10px]" style={{ fontVariationSettings: "'FILL' 1" }}>star</span> {rating}
           </div>
         )}
       </div>
 
       {/* Title below */}
-      <div className="mt-2 px-0.5">
-        <h3 className="text-sm font-body font-medium text-text-primary truncate group-hover:text-omnitrix-green transition-colors">
+      <div className="mt-4">
+        <span className="text-primary text-[10px] font-bold uppercase tracking-widest mb-1 block">
+           {year}
+        </span>
+        <h3 className="font-headline font-bold text-lg leading-tight uppercase text-on-surface group-hover:text-primary transition-colors truncate">
           {title}
         </h3>
-        <p className="text-xs text-text-muted mt-0.5">{year}</p>
       </div>
     </motion.div>
   );

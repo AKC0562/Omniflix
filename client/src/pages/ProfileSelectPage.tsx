@@ -30,15 +30,27 @@ export default function ProfileSelectPage() {
     try {
       const { data } = await profileAPI.deleteProfile(profileId);
       updateProfiles(data.profiles);
-    } catch {}
+    } catch { }
   };
 
   return (
-    <div className="min-h-screen bg-[#141414] flex flex-col items-center justify-center relative overflow-hidden px-4 md:px-8">
-      {/* Background Glow */}
-      <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-        <div className="w-[600px] h-[600px] bg-omnitrix-green/5 rounded-full blur-[100px]" />
-      </div>
+    <div className="min-h-screen bg-black flex flex-col relative overflow-hidden">
+      {/* Holographic Grid Background */}
+      <div
+        className="fixed inset-0 pointer-events-none"
+        style={{
+          backgroundImage:
+            'linear-gradient(rgba(142, 255, 113, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(142, 255, 113, 0.03) 1px, transparent 1px)',
+          backgroundSize: '40px 40px',
+        }}
+      />
+      {/* Radial Green Glow */}
+      <div
+        className="fixed inset-0 pointer-events-none"
+        style={{
+          background: 'radial-gradient(circle at center, rgba(142, 255, 113, 0.08) 0%, transparent 70%)',
+        }}
+      />
 
       {/* Transformation flash overlay */}
       <AnimatePresence>
@@ -55,143 +67,278 @@ export default function ProfileSelectPage() {
               transition={{ duration: 1.2, ease: "easeInOut" }}
               className="w-32 h-32 rounded-full border-[12px] border-black flex items-center justify-center relative bg-omnitrix-green overflow-hidden"
             >
-               {/* Hourglass inside transformation */}
-               <div className="absolute inset-x-0 h-[120%] bg-black/90" style={{ clipPath: 'polygon(0 0, 100% 0, 60% 50%, 100% 100%, 0 100%, 40% 50%)' }} />
+              {/* Hourglass inside transformation */}
+              <div className="absolute inset-x-0 h-[120%] bg-black/90" style={{ clipPath: 'polygon(0 0, 100% 0, 60% 50%, 100% 100%, 0 100%, 40% 50%)' }} />
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5 }}
-        className="relative z-10 w-full max-w-6xl flex flex-col items-center justify-center -mt-12"
-      >
-        <h1 className="text-center font-display text-4xl md:text-5xl lg:text-6xl text-white mb-8 md:mb-12 font-medium tracking-wide">
-          Who's watching?
-        </h1>
+      {/* Top Nav Bar */}
+      <header className="w-full fixed top-0 left-0 z-40">
+        <nav className="flex justify-between items-center w-full px-6 md:px-8 py-5 md:py-6 max-w-[1440px] mx-auto">
+          <div
+            className="text-xl md:text-2xl font-bold tracking-tighter uppercase font-headline"
+            style={{
+              color: '#a3e635',
+              filter: 'drop-shadow(0 0 10px rgba(142,255,113,0.5))',
+            }}
+          >
+            OMNITRIX CORE
+          </div>
+          <div className="hidden md:flex items-center gap-8 font-headline tracking-widest uppercase text-sm">
+            <a href="#" className="text-zinc-500 hover:text-lime-200 transition-colors duration-300">Selection Core</a>
+            <a href="#" className="text-zinc-500 hover:text-lime-200 transition-colors duration-300">DNA Vault</a>
+            <a href="#" className="text-zinc-500 hover:text-lime-200 transition-colors duration-300">System Logs</a>
+          </div>
+          <div className="flex items-center gap-4 md:gap-6">
+            <button className="hover:bg-zinc-800/40 hover:scale-105 transition-all duration-300 p-2 rounded-full active:scale-95">
+              <span className="material-symbols-outlined" style={{ color: '#a3e635' }}>settings</span>
+            </button>
+            <button className="hover:bg-zinc-800/40 hover:scale-105 transition-all duration-300 p-2 rounded-full active:scale-95">
+              <span className="material-symbols-outlined" style={{ color: '#a3e635' }}>security</span>
+            </button>
+            <div className="w-9 h-9 md:w-10 md:h-10 rounded-full border-2 border-primary overflow-hidden bg-surface-container-high">
+              <div className="w-full h-full flex items-center justify-center text-lg">
+                {user.profiles[0] ? getAlienAvatarInfo(user.profiles[0].avatar).emoji : '👤'}
+              </div>
+            </div>
+          </div>
+        </nav>
+      </header>
 
-        {/* Profile row */}
-        <div className="flex flex-wrap justify-center items-center gap-4 md:gap-6 lg:gap-10 mb-16 md:mb-20">
-          {user.profiles.map((profile, i) => {
-            const avatarInfo = getAlienAvatarInfo(profile.avatar);
-            const isTransforming = transformingId === profile._id;
-            
-            return (
+      {/* Main Content */}
+      <main className="relative z-10 min-h-screen flex flex-col items-center justify-center px-4 md:px-6 pt-24 pb-20 md:pb-12">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className="w-full max-w-6xl flex flex-col items-center justify-center"
+        >
+          {/* Title */}
+          <div className="text-center mb-12 md:mb-16">
+            <h1 className="font-headline text-4xl sm:text-5xl md:text-7xl font-bold tracking-tighter mb-4 text-white uppercase">
+              SELECT{' '}
+              <span
+                style={{
+                  color: '#8eff71',
+                  filter: 'drop-shadow(0 0 15px rgba(142, 255, 113, 0.4))',
+                }}
+              >
+                DNA PROFILE
+              </span>
+            </h1>
+            <p className="font-body text-on-surface-variant tracking-[0.2em] text-xs md:text-sm uppercase">
+              Verification required for access to Holo-Stream archives
+            </p>
+          </div>
+
+          {/* Profile Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 md:gap-12 max-w-5xl mb-16 md:mb-20">
+            {user.profiles.map((profile, i) => {
+              const avatarInfo = getAlienAvatarInfo(profile.avatar);
+              const isTransforming = transformingId === profile._id;
+
+              return (
+                <motion.div
+                  key={profile._id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.1, duration: 0.5 }}
+                  className="relative group flex flex-col items-center"
+                >
+                  <div className="relative">
+                    <button
+                      onClick={() => handleSelectProfile(profile)}
+                      className="relative w-32 h-32 sm:w-36 sm:h-36 md:w-44 md:h-44 rounded-full flex items-center justify-center outline-none"
+                      disabled={transformingId !== null}
+                      style={{ transition: 'all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)' }}
+                      onMouseEnter={(e) => {
+                        if (!transformingId) (e.currentTarget as HTMLElement).style.transform = 'scale(1.1)';
+                      }}
+                      onMouseLeave={(e) => {
+                        (e.currentTarget as HTMLElement).style.transform = 'scale(1)';
+                      }}
+                    >
+                      {/* Outer Glow Ring */}
+                      <motion.div
+                        className="absolute inset-0 rounded-full p-1"
+                        style={{
+                          background: `linear-gradient(135deg, ${avatarInfo.color}, #8eff71)`,
+                          opacity: 0.9,
+                        }}
+                        animate={isTransforming ? {
+                          boxShadow: `0 0 50px ${avatarInfo.color}`,
+                          scale: 1.05,
+                        } : {}}
+                      >
+                        {/* Inner Container */}
+                        <div className="w-full h-full rounded-full overflow-hidden bg-surface-container-high flex items-center justify-center relative"
+                          style={{ border: '3px solid rgba(0,0,0,0.8)' }}
+                        >
+                          {/* Color Tint Background */}
+                          <div
+                            className="absolute inset-0 opacity-30 group-hover:opacity-50 transition-opacity duration-500"
+                            style={{ backgroundColor: avatarInfo.color }}
+                          />
+
+                          {/* Avatar Emoji */}
+                          <motion.span
+                            className="relative z-10 text-5xl sm:text-6xl md:text-7xl drop-shadow-2xl"
+                            style={{ filter: 'grayscale(60%)' }}
+                            animate={isTransforming
+                              ? { scale: [1, 1.3, 0], opacity: [1, 1, 0] }
+                              : { scale: 1, opacity: 1 }
+                            }
+                            onMouseEnter={(e) => {
+                              (e.currentTarget as HTMLElement).style.filter = 'grayscale(0%)';
+                            }}
+                            onMouseLeave={(e) => {
+                              (e.currentTarget as HTMLElement).style.filter = 'grayscale(60%)';
+                            }}
+                          >
+                            {avatarInfo.emoji}
+                          </motion.span>
+
+                          {/* Gradient Overlay on hover */}
+                          <div
+                            className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                            style={{
+                              background: `linear-gradient(to top, ${avatarInfo.color}30, transparent)`,
+                            }}
+                          />
+                        </div>
+                      </motion.div>
+
+                      {/* Hover Glow Ring */}
+                      <div
+                        className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500 pointer-events-none"
+                        style={{
+                          boxShadow: `0 0 40px rgba(142, 255, 113, 0.4)`,
+                        }}
+                      />
+
+                      {/* Editing Overlay */}
+                      {isEditing && (
+                        <div className="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center backdrop-blur-sm z-20">
+                          <FiEdit2 size={36} className="text-white" />
+                        </div>
+                      )}
+                    </button>
+
+                    {/* Delete Button (when editing) */}
+                    {isEditing && (
+                      <motion.button
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        onClick={(e) => { e.stopPropagation(); handleDeleteProfile(profile._id); }}
+                        className="absolute -top-1 -right-1 md:-top-2 md:-right-2 w-10 h-10 rounded-full bg-red-600 border-[3px] border-black text-white flex items-center justify-center hover:bg-red-500 transition-colors z-30 shadow-lg"
+                        disabled={user.profiles.length <= 1}
+                      >
+                        <FiTrash2 size={18} />
+                      </motion.button>
+                    )}
+                  </div>
+
+                  {/* Profile Name */}
+                  <span className="mt-5 md:mt-6 text-zinc-300 group-hover:text-primary transition-colors duration-300 text-lg sm:text-xl md:text-2xl font-headline font-medium tracking-wide text-center">
+                    {profile.name}
+                  </span>
+                </motion.div>
+              );
+            })}
+
+            {/* Add Profile / Initialize DNA Button */}
+            {user.profiles.length < 5 && (
               <motion.div
-                key={profile._id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1, duration: 0.4 }}
-                className="relative group flex flex-col items-center shrink-0"
+                transition={{ delay: user.profiles.length * 0.1, duration: 0.5 }}
+                className="relative group flex flex-col items-center"
               >
-                <div className="relative">
-                  <button
-                    onClick={() => handleSelectProfile(profile)}
-                    className="relative w-28 h-28 md:w-36 md:h-36 lg:w-40 lg:h-40 rounded-full flex items-center justify-center outline-none"
-                    disabled={transformingId !== null}
+                <button
+                  onClick={() => setShowCreateModal(true)}
+                  className="relative w-32 h-32 sm:w-36 sm:h-36 md:w-44 md:h-44 rounded-full flex items-center justify-center outline-none transition-all duration-500"
+                  style={{
+                    border: '2px dashed #52525b',
+                    background: 'rgba(25, 25, 25, 0.5)',
+                  }}
+                  onMouseEnter={(e) => {
+                    const el = e.currentTarget;
+                    el.style.borderColor = '#8eff71';
+                    el.style.background = 'rgba(142, 255, 113, 0.1)';
+                    el.style.transform = 'scale(1.1)';
+                  }}
+                  onMouseLeave={(e) => {
+                    const el = e.currentTarget;
+                    el.style.borderColor = '#52525b';
+                    el.style.background = 'rgba(25, 25, 25, 0.5)';
+                    el.style.transform = 'scale(1)';
+                  }}
+                >
+                  <span
+                    className="material-symbols-outlined text-5xl text-zinc-500 group-hover:text-primary transition-all duration-500 group-hover:rotate-90"
                   >
-                    {/* The Omnitrix Dial Base */}
-                    <motion.div 
-                      className="absolute inset-0 rounded-full border-4 border-[#333] bg-[#111] group-hover:border-white transition-colors duration-400 shadow-xl overflow-hidden"
-                      animate={isTransforming ? { scale: 1.1, borderColor: '#22c55e', boxShadow: '0 0 50px #22c55e' } : {}}
-                    >
-                      {/* Dial Details (Outer Ring) */}
-                      <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full opacity-60 group-hover:opacity-100 transition-opacity duration-300">
-                        <circle cx="50" cy="50" r="48" fill="none" stroke="#222" strokeWidth="4" />
-                        <circle cx="50" cy="50" r="44" fill="none" stroke={avatarInfo.color} strokeWidth="1.5" strokeDasharray="10 6" className="animate-[spin_20s_linear_infinite]" />
-                        {/* Dial interface notches */}
-                        <path d="M 50 0 L 50 12 M 100 50 L 88 50 M 50 100 L 50 88 M 0 50 L 12 50" stroke={avatarInfo.color} strokeWidth="3" opacity="0.9" />
-                        <path d="M 15 15 L 23 23 M 85 15 L 77 23 M 15 85 L 23 77 M 85 85 L 77 77" stroke="#444" strokeWidth="2" />
-                      </svg>
-                      
-                      {/* Omnitrix Hourglass Base (subtle dark background for contrast) */}
-                      <div className="absolute inset-3 bg-black/80 rounded-full flex items-center justify-center overflow-hidden border border-[#222]">
-                        <div className="absolute inset-0 opacity-40 group-hover:opacity-60 transition-opacity duration-300" style={{ backgroundColor: avatarInfo.color }} />
-                        {/* Avatar Image / Emoji */}
-                        <motion.span 
-                          className="relative z-10 text-5xl md:text-6xl lg:text-[4.5rem] drop-shadow-2xl"
-                          animate={isTransforming ? { scale: [1, 1.3, 0], opacity: [1, 1, 0] } : { scale: 1, opacity: 1 }}
-                        >
-                          {avatarInfo.emoji}
-                        </motion.span>
-                      </div>
-                      
-                      {/* Glow overlay on hover */}
-                      <div 
-                        className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" 
-                        style={{ boxShadow: `inset 0 0 25px ${avatarInfo.color}60` }}
-                      />
-                    </motion.div>
-                    
-                    {/* Editing Overlay */}
-                    {isEditing && (
-                      <div className="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center backdrop-blur-sm z-20">
-                        <FiEdit2 size={36} className="text-white" />
-                      </div>
-                    )}
-                  </button>
-
-                  {/* Delete Button (when editing) */}
-                  {isEditing && (
-                    <motion.button
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      onClick={(e) => { e.stopPropagation(); handleDeleteProfile(profile._id); }}
-                      className="absolute -top-1 -right-1 md:-top-2 md:-right-2 w-10 h-10 rounded-full bg-red-600 border-[3px] border-[#141414] text-white flex items-center justify-center hover:bg-red-500 transition-colors z-30 shadow-lg"
-                      disabled={user.profiles.length <= 1}
-                    >
-                      <FiTrash2 size={18} />
-                    </motion.button>
-                  )}
-                </div>
-
-                {/* Profile Name */}
-                <span className="mt-4 md:mt-5 text-[#808080] group-hover:text-white transition-colors duration-300 text-lg md:text-xl lg:text-2xl font-display text-center">
-                  {profile.name}
+                    add
+                  </span>
+                  {/* Outer expand ring on hover */}
+                  <div
+                    className="absolute inset-0 rounded-full opacity-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-500 pointer-events-none"
+                    style={{ border: '1px solid rgba(142, 255, 113, 0.5)' }}
+                  />
+                </button>
+                <span className="mt-5 md:mt-6 text-zinc-500 group-hover:text-primary transition-colors duration-300 text-lg sm:text-xl md:text-2xl font-headline font-medium tracking-wide text-center">
+                  INITIALIZE DNA
                 </span>
               </motion.div>
-            );
-          })}
+            )}
+          </div>
 
-          {/* Add Profile Button */}
-          {user.profiles.length < 5 && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: user.profiles.length * 0.1, duration: 0.4 }}
-              className="relative group flex flex-col items-center shrink-0"
+          {/* Manage Profiles Button */}
+          <div className="mt-4 md:mt-8">
+            <button
+              onClick={() => setIsEditing(!isEditing)}
+              className="group relative px-10 md:px-12 py-3 md:py-4 bg-transparent font-headline tracking-[0.3em] text-xs md:text-sm uppercase rounded-lg overflow-hidden transition-all duration-300"
+              style={{
+                border: isEditing ? '2px solid #8eff71' : '2px solid #3f3f46',
+                color: isEditing ? '#8eff71' : '#a1a1aa',
+              }}
+              onMouseEnter={(e) => {
+                if (!isEditing) {
+                  (e.currentTarget as HTMLElement).style.borderColor = '#8eff71';
+                  (e.currentTarget as HTMLElement).style.color = '#8eff71';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!isEditing) {
+                  (e.currentTarget as HTMLElement).style.borderColor = '#3f3f46';
+                  (e.currentTarget as HTMLElement).style.color = '#a1a1aa';
+                }
+              }}
             >
-              <button
-                onClick={() => setShowCreateModal(true)}
-                className="relative w-28 h-28 md:w-36 md:h-36 lg:w-40 lg:h-40 rounded-full flex items-center justify-center outline-none transition-colors duration-300 group-hover:bg-white"
-              >
-                <div className="absolute inset-0 rounded-full border-4 border-[#333] group-hover:border-white transition-colors duration-300 flex items-center justify-center bg-transparent">
-                  <FiPlus size={56} className="text-[#808080] group-hover:text-black transition-colors duration-300" />
-                </div>
-              </button>
-              <span className="mt-4 md:mt-5 text-[#808080] group-hover:text-white transition-colors duration-300 text-lg md:text-xl lg:text-2xl font-display text-center">
-                Add Profile
-              </span>
-            </motion.div>
-          )}
-        </div>
+              <span className="relative z-10">{isEditing ? 'DONE' : 'MANAGE PROFILES'}</span>
+              <div
+                className="absolute inset-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300"
+                style={{ background: 'rgba(142, 255, 113, 0.1)' }}
+              />
+            </button>
+          </div>
+        </motion.div>
+      </main>
 
-        {/* Manage Profiles Button */}
-        <div className="w-full flex justify-center mt-4">
-          <button
-            onClick={() => setIsEditing(!isEditing)}
-            className={`px-6 py-2 md:px-8 md:py-3 font-display text-[1rem] md:text-xl tracking-[0.15em] border-[1px] md:border-[1.5px] transition-all duration-300 uppercase ${
-              isEditing 
-                ? 'bg-white text-black border-white' 
-                : 'border-[#808080] text-[#808080] hover:text-white hover:border-white'
-            }`}
-          >
-            {isEditing ? 'Done' : 'Manage Profiles'}
-          </button>
+      {/* Bottom Status Indicators */}
+      <div className="fixed bottom-6 md:bottom-8 left-6 md:left-8 hidden md:block z-20">
+        <div className="flex items-center gap-3 text-xs font-headline tracking-widest text-zinc-600">
+          <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+          <span>GALACTIC NETWORK SECURED</span>
         </div>
-      </motion.div>
+      </div>
+      <div className="fixed bottom-6 md:bottom-8 right-6 md:right-8 hidden md:block z-20">
+        <div className="text-xs font-headline tracking-widest text-zinc-600 text-right leading-relaxed">
+          SYSTEM VERSION: 10.4.0<br />
+          ENCRYPTION: LEVEL 20
+        </div>
+      </div>
 
       {/* Create profile modal */}
       <AnimatePresence>
@@ -251,11 +398,15 @@ function CreateProfileModal({
         initial={{ opacity: 0, scale: 0.9, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.9, y: 20 }}
-        className="relative bg-[#181818] border border-white/10 rounded-xl p-6 md:p-8 w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl"
+        className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl rounded-xl p-6 md:p-8"
+        style={{
+          background: '#181818',
+          border: '1px solid rgba(255,255,255,0.1)',
+        }}
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="font-display font-medium text-3xl md:text-4xl text-white mb-8 tracking-wide">
-          Add Profile
+        <h2 className="font-headline font-bold text-3xl md:text-4xl text-white mb-8 tracking-tight uppercase">
+          Initialize <span style={{ color: '#8eff71' }}>DNA</span>
         </h2>
 
         {error && (
@@ -265,25 +416,25 @@ function CreateProfileModal({
         )}
 
         <form onSubmit={handleCreate}>
-          <div className="flex flex-col md:flex-row gap-6 md:gap-8 mb-8 border-b border-white/10 pb-8">
+          <div className="flex flex-col md:flex-row gap-6 md:gap-8 mb-8 pb-8" style={{ borderBottom: '1px solid rgba(142, 255, 113, 0.1)' }}>
             <div className="flex flex-col items-center shrink-0">
-              {/* Selected Avatar Preview styled like a dial */}
+              {/* Selected Avatar Preview */}
               <motion.div
                 key={selectedAvatar}
                 initial={{ scale: 0.8, rotate: -90 }}
                 animate={{ scale: 1, rotate: 0 }}
                 transition={{ type: 'spring', damping: 20 }}
-                className="w-32 h-32 md:w-40 md:h-40 rounded-full border-[3px] flex flex-col items-center justify-center relative overflow-hidden"
+                className="w-32 h-32 md:w-40 md:h-40 rounded-full flex flex-col items-center justify-center relative overflow-hidden"
                 style={{
-                  backgroundColor: '#111',
-                  borderColor: avatarInfo.color,
+                  background: `linear-gradient(135deg, ${avatarInfo.color}40, #111)`,
+                  border: `3px solid ${avatarInfo.color}`,
                   boxShadow: `0 0 40px ${avatarInfo.color}40`,
                 }}
               >
                 <div className="absolute inset-0 opacity-30" style={{ backgroundColor: avatarInfo.color }} />
                 <span className="relative z-10 text-6xl md:text-7xl drop-shadow-lg">{avatarInfo.emoji}</span>
               </motion.div>
-              <p className="text-center mt-4 text-sm font-display text-white tracking-widest uppercase">{avatarInfo.name}</p>
+              <p className="text-center mt-4 text-sm font-headline text-white tracking-widest uppercase">{avatarInfo.name}</p>
             </div>
 
             <div className="flex-1 flex flex-col justify-center gap-6">
@@ -291,19 +442,30 @@ function CreateProfileModal({
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Name"
+                placeholder="Enter Profile Name"
                 required
                 maxLength={30}
-                className="w-full bg-[#333] text-white px-4 py-3 text-lg placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-omnitrix-green transition-all"
+                className="w-full bg-[#222] text-white px-4 py-3 text-lg font-headline placeholder:text-zinc-500 focus:outline-none rounded-lg transition-all"
+                style={{
+                  border: '1px solid #333',
+                }}
+                onFocus={(e) => {
+                  e.currentTarget.style.borderColor = '#8eff71';
+                  e.currentTarget.style.boxShadow = '0 0 15px rgba(142, 255, 113, 0.15)';
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.borderColor = '#333';
+                  e.currentTarget.style.boxShadow = 'none';
+                }}
               />
-              <p className="text-sm text-gray-400 font-body leading-relaxed hidden md:block">
+              <p className="text-sm text-zinc-400 font-body leading-relaxed hidden md:block">
                 {avatarInfo.description}
               </p>
             </div>
           </div>
 
           {/* Avatar grid */}
-          <h3 className="text-xl font-display text-white mb-4">Choose your alien</h3>
+          <h3 className="text-xl font-headline text-white mb-4 tracking-wide uppercase">Choose your <span style={{ color: '#8eff71' }}>alien</span></h3>
           <div className="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-8 gap-3 mb-8 max-h-[160px] overflow-y-auto pr-2 custom-scrollbar">
             {ALIEN_AVATARS.map((alien) => (
               <motion.button
@@ -312,14 +474,13 @@ function CreateProfileModal({
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={() => setSelectedAvatar(alien.id)}
-                className={`aspect-square rounded-full flex items-center justify-center text-3xl border-2 transition-all ${
-                  selectedAvatar === alien.id
-                    ? 'scale-110 shadow-lg'
-                    : 'border-transparent bg-[#333] hover:bg-[#444]'
-                }`}
+                className="aspect-square rounded-full flex items-center justify-center text-3xl transition-all"
                 style={{
                   color: alien.color,
-                  borderColor: selectedAvatar === alien.id ? alien.color : 'transparent',
+                  border: selectedAvatar === alien.id ? `2px solid ${alien.color}` : '2px solid transparent',
+                  background: selectedAvatar === alien.id ? `${alien.color}15` : '#333',
+                  boxShadow: selectedAvatar === alien.id ? `0 0 20px ${alien.color}30` : 'none',
+                  transform: selectedAvatar === alien.id ? 'scale(1.05)' : undefined,
                 }}
                 title={alien.name}
               >
@@ -328,18 +489,24 @@ function CreateProfileModal({
             ))}
           </div>
 
-          <div className="flex items-center gap-4 pt-4 border-t border-white/10">
+          <div className="flex items-center gap-4 pt-4" style={{ borderTop: '1px solid rgba(142, 255, 113, 0.1)' }}>
             <button
               type="submit"
               disabled={loading || !name.trim()}
-              className="px-8 py-3 bg-white text-black font-display text-lg tracking-widest uppercase hover:bg-gray-200 transition-colors disabled:opacity-50"
+              className="px-8 py-3 font-headline text-lg tracking-widest uppercase transition-all disabled:opacity-50"
+              style={{
+                background: 'linear-gradient(135deg, #8eff71, #2be800)',
+                color: '#0b5800',
+                borderRadius: '8px',
+              }}
             >
               {loading ? '...' : 'Continue'}
             </button>
             <button
               type="button"
               onClick={onClose}
-              className="px-8 py-3 border border-gray-500 text-gray-400 font-display text-lg tracking-widest uppercase hover:text-white hover:border-white transition-colors"
+              className="px-8 py-3 text-zinc-400 font-headline text-lg tracking-widest uppercase hover:text-white transition-colors"
+              style={{ border: '1px solid #52525b', borderRadius: '8px' }}
             >
               Cancel
             </button>

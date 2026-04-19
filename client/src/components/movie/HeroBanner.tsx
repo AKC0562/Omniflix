@@ -52,22 +52,16 @@ export default function HeroBanner({ movies, category }: Props) {
           )}
 
           {/* Gradients */}
-          <div className="absolute inset-0 `bg-gradient-to-r` from-surface-dark via-surface-dark/60 to-transparent" />
-          <div className="absolute inset-0 `bg-gradient-to-t` from-surface-dark via-transparent to-surface-dark/30" />
-          <div className="absolute bottom-0 left-0 right-0 h-40 `bg-gradient-to-t` from-surface-dark to-transparent" />
-
-          {/* Sci-fi scan line */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-[0.03]">
-            <div
-              className="absolute left-0 right-0 `h-[2px]` bg-omnitrix-green"
-              style={{ animation: 'scan-line 4s linear infinite' }}
-            />
-          </div>
+          <div className="absolute inset-0 bg-gradient-to-r from-surface-container-lowest via-surface-container-lowest/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-surface-container-lowest via-transparent to-transparent" />
+          
+          {/* Ambient Glow Orbs */}
+          <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-primary/10 rounded-full blur-[120px]" />
         </motion.div>
       </AnimatePresence>
 
       {/* Content */}
-      <div className="absolute bottom-24 md:bottom-32 left-0 right-0 px-4 md:px-12 lg:px-16 z-10">
+      <div className="absolute bottom-24 md:bottom-32 left-0 right-0 px-8 md:px-16 z-10">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentIndex}
@@ -77,75 +71,55 @@ export default function HeroBanner({ movies, category }: Props) {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="max-w-2xl"
           >
-            {/* Omnitrix tag */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.4 }}
-              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-omnitrix-green/10 border border-omnitrix-green/30 mb-4"
-            >
-              <div className="w-2 h-2 bg-omnitrix-green rounded-full animate-energy-pulse" />
-              <span className="text-omnitrix-green text-xs font-display tracking-wider">
-                {categoryLabel} • {movie.vote_average ? `★ ${movie.vote_average.toFixed(1)}` : 'NEW'}
+            {/* Tag */}
+            <div className="flex items-center gap-3 mb-4">
+              <span className="bg-primary/20 text-primary px-3 py-1 rounded-full text-xs font-bold tracking-widest uppercase border border-primary/30">
+                {categoryLabel}
               </span>
-            </motion.div>
+              <span className="text-on-surface-variant text-sm font-medium">
+                {movie.vote_average ? `★ ${movie.vote_average.toFixed(1)} Galactic Rating` : 'NEW ENTRY'}
+              </span>
+            </div>
 
-            <h1 className="text-3xl md:text-5xl lg:text-6xl font-display font-bold text-white mb-3 leading-tight">
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-headline font-black tracking-tighter text-on-surface mb-6 uppercase">
               {title}
             </h1>
 
-            <p className="text-sm md:text-base text-text-secondary leading-relaxed mb-6 line-clamp-3 max-w-xl font-body">
+            <p className="text-lg text-on-surface-variant mb-8 max-w-lg leading-relaxed line-clamp-3">
               {movie.overview}
             </p>
 
-            <div className="flex flex-wrap gap-3">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="flex items-center gap-2 px-6 md:px-8 py-3 bg-omnitrix-green text-surface-dark font-display font-bold rounded-lg text-sm shadow-lg shadow-omnitrix-green/30 hover:bg-omnitrix-glow transition-colors"
-              >
-                <FiPlay size={18} />
-                Play
-              </motion.button>
+            <div className="flex items-center gap-4">
+              <button className="bg-primary text-on-primary px-8 py-4 rounded-full font-bold flex flex-row items-center gap-2 shadow-[0_0_30px_rgba(142,255,113,0.3)] hover:scale-105 active:scale-95 transition-all">
+                <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>play_arrow</span>
+                Stream Now
+              </button>
 
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+              <button
                 onClick={() => openModal(movie)}
-                className="flex items-center gap-2 px-6 md:px-8 py-3 glass rounded-lg text-sm font-display font-medium text-text-primary hover:bg-omnitrix-green/10 transition-colors"
+                className="bg-surface-container-high/60 backdrop-blur-md text-on-surface px-8 py-4 rounded-full font-bold flex flex-row items-center gap-2 border border-outline-variant/30 hover:bg-surface-container-high transition-all"
               >
-                <FiInfo size={18} />
-                More Info
-              </motion.button>
+                <span className="material-symbols-outlined">info</span>
+                DNA Details
+              </button>
             </div>
           </motion.div>
         </AnimatePresence>
 
         {/* Slide indicators */}
-        <div className="flex gap-2 mt-8">
+        <div className="flex gap-2 mt-12">
           {featured.map((_, i) => (
             <button
               key={i}
               onClick={() => setCurrentIndex(i)}
               className={`h-1 rounded-full transition-all duration-500 ${i === currentIndex
-                ? 'w-8 bg-omnitrix-green glow-green'
-                : 'w-4 bg-text-muted/30 hover:bg-text-muted/50'
+                ? 'w-12 bg-primary shadow-[0_0_10px_rgba(142,255,113,1)]'
+                : 'w-4 bg-outline/30 hover:bg-outline/50'
                 }`}
               aria-label={`Slide ${i + 1}`}
             />
           ))}
         </div>
-      </div>
-
-      {/* Omnitrix corner accent */}
-      <div className="absolute top-20 right-8 hidden lg:block pointer-events-none">
-        <motion.div
-          animate={{ rotate: [0, 360] }}
-          transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-          className="w-20 h-20 border border-omnitrix-green/10 rounded-full flex items-center justify-center"
-        >
-          <div className="w-3 h-3 bg-omnitrix-green/20 rounded-sm rotate-45" />
-        </motion.div>
       </div>
     </div>
   );

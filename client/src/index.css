@@ -1,7 +1,8 @@
 @import "tailwindcss";
 
-/* ===== OmniFlix Ben 10 Theme ===== */
+/* ===== OmniFlix V2 Theme (Merged with old variables for backwards compatibility) ===== */
 @theme {
+  /* Legacy Variables */
   --color-omnitrix-green: #00FF41;
   --color-omnitrix-dark: #0A1A0F;
   --color-omnitrix-panel: #0D2818;
@@ -17,9 +18,71 @@
   --color-danger: #FF1744;
   --color-warning: #FFD600;
 
+  /* New V2 Concept Colors */
+  --color-primary: #8eff71;
+  --color-on-primary: #0d6100;
+  --color-primary-container: #2ff801;
+  --color-on-primary-container: #0b5800;
+  --color-primary-fixed: #2ff801;
+  --color-primary-fixed-dim: #2be800;
+  --color-on-primary-fixed: #064200;
+  --color-on-primary-fixed-variant: #0d6200;
+  --color-primary-dim: #2be800;
+
+  --color-secondary: #90f9a3;
+  --color-on-secondary: #005f28;
+  --color-secondary-container: #006d2f;
+  --color-on-secondary-container: #e4ffe2;
+  --color-secondary-fixed: #90f9a3;
+  --color-secondary-fixed-dim: #82ea96;
+  --color-on-secondary-fixed: #004a1e;
+  --color-on-secondary-fixed-variant: #006a2e;
+  --color-secondary-dim: #82ea96;
+
+  --color-tertiary: #88f6ff;
+  --color-on-tertiary: #005d62;
+  --color-tertiary-container: #17eefa;
+  --color-on-tertiary-container: #005458;
+  --color-tertiary-fixed: #17eefa;
+  --color-tertiary-fixed-dim: #00deea;
+  --color-on-tertiary-fixed: #003f43;
+  --color-on-tertiary-fixed-variant: #005e63;
+  --color-tertiary-dim: #00deea;
+
+  --color-error: #ff7351;
+  --color-on-error: #450900;
+  --color-error-container: #b92902;
+  --color-on-error-container: #ffd2c8;
+  --color-error-dim: #d53d18;
+
+  --color-background: #0e0e0e;
+  --color-on-background: #ffffff;
+  
+  --color-surface: #0e0e0e;
+  --color-on-surface: #ffffff;
+  --color-surface-dim: #0e0e0e;
+  --color-surface-bright: #2c2c2c;
+  --color-surface-container-lowest: #000000;
+  --color-surface-container-low: #131313;
+  --color-surface-container: #191919;
+  --color-surface-container-high: #1f1f1f;
+  --color-surface-container-highest: #262626;
+  --color-on-surface-variant: #ababab;
+  --color-surface-variant: #262626;
+  --color-surface-tint: #8eff71;
+
+  --color-outline: #757575;
+  --color-outline-variant: #484848;
+  --color-inverse-surface: #f9f9f9;
+  --color-inverse-on-surface: #555555;
+  --color-inverse-primary: #106f00;
+
+  /* Fonts */
   --font-display: 'Orbitron', monospace;
-  --font-body: 'Rajdhani', sans-serif;
+  --font-body: 'Inter', sans-serif;
   --font-ui: 'Inter', sans-serif;
+  --font-headline: 'Space Grotesk', sans-serif;
+  --font-label: 'Inter', sans-serif;
 }
 
 /* ===== Global Styles ===== */
@@ -35,146 +98,139 @@ html {
 
 body {
   font-family: var(--font-body);
-  background-color: var(--color-surface-dark);
-  color: var(--color-text-primary);
+  background-color: var(--color-surface-container-lowest);
+  color: var(--color-on-surface);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--color-surface-dark);
+  background: var(--color-surface-container-lowest);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-omnitrix-panel);
-  border-radius: 3px;
+  background: var(--color-surface-variant);
+  border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-omnitrix-green);
+  background: var(--color-primary);
 }
 
-/* ===== Omnitrix Glow Utilities ===== */
-.glow-green {
-  box-shadow: 0 0 15px rgba(0, 255, 65, 0.3), 0 0 30px rgba(0, 255, 65, 0.1);
+/* ===== Utilities from Concept UI ===== */
+.hex-clip {
+  clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+}
+.hex-mask {
+  clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
 }
 
-.glow-green-strong {
-  box-shadow: 0 0 20px rgba(0, 255, 65, 0.5), 0 0 40px rgba(0, 255, 65, 0.2), 0 0 60px rgba(0, 255, 65, 0.1);
+.glow-border:hover {
+  box-shadow: 0 0 15px rgba(142, 255, 113, 0.4);
+}
+.neon-glow {
+  filter: drop-shadow(0 0 8px rgba(142, 255, 113, 0.6));
+}
+.text-outline {
+  -webkit-text-stroke: 2px #8eff71;
+  color: transparent;
 }
 
-.glow-cyan {
-  box-shadow: 0 0 15px rgba(0, 229, 255, 0.3), 0 0 30px rgba(0, 229, 255, 0.1);
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }
 
-.glow-orange {
-  box-shadow: 0 0 15px rgba(255, 109, 0, 0.3), 0 0 30px rgba(255, 109, 0, 0.1);
-}
-
-.text-glow-green {
-  text-shadow: 0 0 10px rgba(0, 255, 65, 0.5), 0 0 20px rgba(0, 255, 65, 0.3);
-}
-
-.text-glow-cyan {
-  text-shadow: 0 0 10px rgba(0, 229, 255, 0.5), 0 0 20px rgba(0, 229, 255, 0.3);
-}
-
-/* ===== Glassmorphism ===== */
-.glass {
-  background: rgba(13, 40, 24, 0.6);
+.glass-card {
+  background: rgba(38, 38, 38, 0.6);
   backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(0, 255, 65, 0.1);
+  border: 1px solid rgba(142, 255, 113, 0.1);
 }
 
-.glass-dark {
-  background: rgba(7, 11, 10, 0.8);
-  backdrop-filter: blur(25px);
-  -webkit-backdrop-filter: blur(25px);
-  border: 1px solid rgba(0, 255, 65, 0.08);
+.glass-panel {
+  background: rgba(31, 31, 31, 0.6);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(142, 255, 113, 0.1);
 }
 
-/* ===== Energy Pulse Animation ===== */
+.hex-grid {
+  background-image: radial-gradient(circle at 2px 2px, rgba(142, 255, 113, 0.05) 1px, transparent 0);
+  background-size: 40px 40px;
+}
+
+.dna-watermark {
+  background-image: url("data:image/svg+xml,%3Csvg width='100' height='200' viewBox='0 0 100 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 20C20 20 80 50 80 100C80 150 20 180 20 180' stroke='%230b5800' stroke-width='2' fill='none'/%3E%3Cpath d='M80 20C80 20 20 50 20 100C20 150 80 180 80 180' stroke='%230b5800' stroke-width='2' fill='none'/%3E%3Cline x1='25' y1='40' x2='75' y2='40' stroke='%230b5800' stroke-width='1'/%3E%3Cline x1='20' y1='70' x2='80' y2='70' stroke='%230b5800' stroke-width='1'/%3E%3Cline x1='20' y1='130' x2='80' y2='130' stroke='%230b5800' stroke-width='1'/%3E%3Cline x1='25' y1='160' x2='75' y2='160' stroke='%230b5800' stroke-width='1'/%3E%3C/svg%3E");
+  background-size: 150px 300px;
+}
+
+.glow-text {
+  text-shadow: 0 0 10px rgba(142, 255, 113, 0.5);
+}
+
+/* Hide scrollbar utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Legacy Utilities for Backwards Compatibility */
+.glow-green { box-shadow: 0 0 15px rgba(0, 255, 65, 0.3), 0 0 30px rgba(0, 255, 65, 0.1); }
+.glow-green-strong { box-shadow: 0 0 20px rgba(0, 255, 65, 0.5), 0 0 40px rgba(0, 255, 65, 0.2), 0 0 60px rgba(0, 255, 65, 0.1); }
+.glow-cyan { box-shadow: 0 0 15px rgba(0, 229, 255, 0.3), 0 0 30px rgba(0, 229, 255, 0.1); }
+.glow-orange { box-shadow: 0 0 15px rgba(255, 109, 0, 0.3), 0 0 30px rgba(255, 109, 0, 0.1); }
+.text-glow-green { text-shadow: 0 0 10px rgba(0, 255, 65, 0.5), 0 0 20px rgba(0, 255, 65, 0.3); }
+.text-glow-cyan { text-shadow: 0 0 10px rgba(0, 229, 255, 0.5), 0 0 20px rgba(0, 229, 255, 0.3); }
+.glass { background: rgba(13, 40, 24, 0.6); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(0, 255, 65, 0.1); }
+.glass-dark { background: rgba(7, 11, 10, 0.8); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid rgba(0, 255, 65, 0.08); }
+
 @keyframes energy-pulse {
-  0%, 100% {
-    opacity: 0.4;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.05);
-  }
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
 }
-
 @keyframes omnitrix-spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
-
 @keyframes omnitrix-glow {
-  0%, 100% {
-    box-shadow: 0 0 20px rgba(0, 255, 65, 0.3), 0 0 40px rgba(0, 255, 65, 0.1);
-  }
-  50% {
-    box-shadow: 0 0 40px rgba(0, 255, 65, 0.6), 0 0 80px rgba(0, 255, 65, 0.3), 0 0 120px rgba(0, 255, 65, 0.1);
-  }
+  0%, 100% { box-shadow: 0 0 20px rgba(0, 255, 65, 0.3), 0 0 40px rgba(0, 255, 65, 0.1); }
+  50% { box-shadow: 0 0 40px rgba(0, 255, 65, 0.6), 0 0 80px rgba(0, 255, 65, 0.3), 0 0 120px rgba(0, 255, 65, 0.1); }
 }
-
 @keyframes scan-line {
   0% { transform: translateY(-100%); }
   100% { transform: translateY(100%); }
 }
-
-@keyframes holographic-shimmer {
-  0% { background-position: -200% center; }
-  100% { background-position: 200% center; }
-}
-
 @keyframes float {
   0%, 100% { transform: translateY(0px); }
   50% { transform: translateY(-8px); }
 }
 
-.animate-energy-pulse {
-  animation: energy-pulse 2s ease-in-out infinite;
-}
+.animate-energy-pulse { animation: energy-pulse 2s ease-in-out infinite; }
+.animate-omnitrix-spin { animation: omnitrix-spin 3s linear infinite; }
+.animate-omnitrix-glow { animation: omnitrix-glow 2s ease-in-out infinite; }
+.animate-float { animation: float 3s ease-in-out infinite; }
 
-.animate-omnitrix-spin {
-  animation: omnitrix-spin 3s linear infinite;
-}
-
-.animate-omnitrix-glow {
-  animation: omnitrix-glow 2s ease-in-out infinite;
-}
-
-.animate-float {
-  animation: float 3s ease-in-out infinite;
-}
-
-/* ===== Hide scrollbar for horizontal rows ===== */
 .hide-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
-
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
 
-/* ===== Skeleton Loading ===== */
 @keyframes skeleton-shimmer {
   0% { background-position: -200px 0; }
   100% { background-position: calc(200px + 100%) 0; }
 }
-
 .skeleton {
-  background: linear-gradient(90deg, var(--color-surface-card) 25%, var(--color-surface-elevated) 37%, var(--color-surface-card) 63%);
+  background: linear-gradient(90deg, var(--color-surface-container-high) 25%, var(--color-surface-bright) 37%, var(--color-surface-container-high) 63%);
   background-size: 400px 100%;
   animation: skeleton-shimmer 1.4s ease infinite;
 }
